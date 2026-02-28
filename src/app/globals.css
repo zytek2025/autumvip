@@ -82,11 +82,7 @@ body {
   opacity: 0.4;
 }
 
-@media (min-width: 1024px) {
-  body {
-    cursor: none;
-  }
-}
+
 
 /* ─ SCROLLBAR ─ */
 ::-webkit-scrollbar {

@@ -4,7 +4,7 @@ import React from "react";
 
 export default function Home() {
   return (
-    <div className="fixed inset-0 z-[9999] bg-black overflow-hidden font-raleway select-none">
+    <div className="fixed inset-0 z-50 bg-black overflow-hidden font-raleway select-none">
       {/* ── AMBIENT BACKGROUND ── */}
       <div className="absolute inset-0 pointer-events-none">
         <div

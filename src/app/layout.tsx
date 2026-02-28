@@ -39,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
+        suppressHydrationWarning
         className={`${playfair.variable} ${raleway.variable} ${cormorant.variable} antialiased`}
       >
         <CustomCursor />
