@@ -46,10 +46,10 @@ export default function RootLayout({
         <main className="min-h-screen bg-black">
           {children}
         </main>
-        <Script
-          src="https://ionos.ai-voice-receptionist.com/chat-scripts-MqGN74WP/web-chat.js"
-          strategy="lazyOnload"
-          data-client-secret="adf9bab9-8f8d-406e-aec8-1fb5e235f44c"
+        <div
+          dangerouslySetInnerHTML={{
+            __html: `<script src="https://ionos.ai-voice-receptionist.com/chat-scripts-MqGN74WP/web-chat.js" name="web-chat" data-client-secret="adf9bab9-8f8d-406e-aec8-1fb5e235f44c"></script>`,
+          }}
         />
       </body>
     </html>
