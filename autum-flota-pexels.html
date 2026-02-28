@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AUTUM — Flota Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Raleway:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --K:#000; --K1:#0a0a0a; --K2:#111; --K3:#1a1a1a; --K4:#252525; --K5:#2e2e2e;
+  --W:#fff; --W1:#f8f4ee;
+  --G:#c9a84c; --G1:#e8c96a; --G2:#a8832a;
+  --Go:rgba(201,168,76,.1); --Gb:rgba(201,168,76,.25);
+  --FD:'Playfair Display',serif;
+  --FB:'Raleway',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body {
+  background:#050505;
+  font-family:var(--FB); font-weight:300;
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh;
+  overflow:hidden;
+}
+
+.phone {
+  width:390px; height:844px;
+  background:var(--K1); border-radius:48px;
+  overflow:hidden; position:relative;
+  box-shadow: 0 0 0 1px rgba(201,168,76,.18), 0 0 0 2px #000,
+              0 60px 140px rgba(0,0,0,.95), 0 0 80px rgba(201,168,76,.03);
+}
+.notch {
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:120px; height:34px; background:var(--K);
+  border-radius:0 0 22px 22px; z-index:1000;
+}
+
+.screen {
+  position:absolute; inset:0;
+  opacity:0; pointer-events:none;
+  transition:opacity .35s ease;
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.screen.active { opacity:1; pointer-events:all; }
+
+/* ════════════════════════════
+   SCREEN 1 — CATALOG LIST
+════════════════════════════ */
+#s-list { background:var(--K1); }
+
+.list-header {
+  padding:50px 22px 16px;
+  border-bottom:1px solid var(--K3); flex-shrink:0;
+}
+.list-header-row {
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;
+}
+.logo { font-family:var(--FD); font-size:1rem; letter-spacing:.4em; color:var(--W); }
+.logo span { color:var(--G); }
+.eyebrow { font-size:.52rem; letter-spacing:.42em; text-transform:uppercase; color:var(--G); margin-bottom:6px; }
+.h-title { font-family:var(--FD); font-size:1.6rem; font-weight:300; color:var(--W); }
+.h-title em { font-style:italic; color:var(--G); }
+
+.filter-bar {
+  display:flex; overflow-x:auto; scrollbar-width:none;
+  border-bottom:1px solid var(--K3); flex-shrink:0;
+}
+.filter-bar::-webkit-scrollbar{display:none;}
+.ftab {
+  padding:11px 16px; flex-shrink:0;
+  font-size:.5rem; letter-spacing:.28em; text-transform:uppercase;
+  color:rgba(255,255,255,.25); cursor:pointer;
+  border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap;
+}
+.ftab.on { color:var(--G); border-bottom-color:var(--G); }
+
+.list-scroll {
+  flex:1; overflow-y:auto; padding:14px 14px 100px; scrollbar-width:none;
+}
+.list-scroll::-webkit-scrollbar{display:none;}
+
+/* ── VEHICLE CARD ── */
+.vcard {
+  background:var(--K2); border:1px solid var(--K3);
+  margin-bottom:14px; cursor:pointer; position:relative; overflow:hidden;
+  transition:border-color .3s, transform .15s;
+  animation:cardIn .45s ease both;
+}
+.vcard:nth-child(1){animation-delay:.04s;}
+.vcard:nth-child(2){animation-delay:.11s;}
+.vcard:nth-child(3){animation-delay:.18s;}
+.vcard:nth-child(4){animation-delay:.25s;}
+@keyframes cardIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+.vcard::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
+  background:var(--G); transform:scaleY(0); transition:transform .3s; transform-origin:bottom;
+}
+.vcard:hover { border-color:rgba(201,168,76,.3); }
+.vcard:hover::before { transform:scaleY(1); }
+.vcard.featured { border-color:rgba(201,168,76,.4); }
+.vcard.featured::before { transform:scaleY(1); }
+
+/* Photo */
+.vcard-img-wrap {
+  position:relative; height:190px; overflow:hidden; background:var(--K);
+}
+.vcard-img-wrap img {
+  width:100%; height:100%; object-fit:cover; object-position:center 55%;
+  transition:transform .5s ease, opacity .3s;
+  filter:brightness(.82) contrast(1.08) saturate(.85);
+  opacity:0;
+}
+.vcard-img-wrap img.loaded { opacity:1; }
+.vcard:hover .vcard-img-wrap img { transform:scale(1.04); }
+.vcard-img-wrap::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to bottom, transparent 30%, rgba(0,0,0,.75) 100%);
+}
+/* skeleton shimmer */
+.vcard-img-wrap .sk {
+  position:absolute; inset:0;
+  background:linear-gradient(90deg, var(--K3) 25%, var(--K4) 50%, var(--K3) 75%);
+  background-size:200% 100%; animation:sk 1.4s infinite;
+  transition:opacity .3s;
+}
+.vcard-img-wrap .sk.hide { opacity:0; pointer-events:none; }
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.vcard-badge {
+  position:absolute; top:10px; right:10px; z-index:3;
+  font-size:.42rem; letter-spacing:.25em; text-transform:uppercase;
+  color:var(--K); background:var(--G); padding:4px 8px;
+}
+.vcard-badge.wh { background:rgba(255,255,255,.9); }
+.vcard-img-label {
+  position:absolute; bottom:10px; left:14px; z-index:3;
+  font-size:.44rem; letter-spacing:.22em; text-transform:uppercase;
+  color:rgba(201,168,76,.65);
+}
+
+/* Info row */
+.vcard-info { padding:14px 16px 0; display:flex; justify-content:space-between; }
+.vcard-name { font-family:var(--FD); font-size:.95rem; color:var(--W); margin-bottom:3px; }
+.vcard-sub { font-size:.48rem; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.25); }
+.vcard-price { text-align:right; }
+.vcard-from { font-size:.42rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.2); display:block; }
+.vcard-amt { font-family:var(--FD); font-size:1.1rem; color:var(--G); }
+
+/* Specs */
+.vcard-specs {
+  display:flex; border-top:1px solid var(--K3); margin-top:12px;
+}
+.sp { flex:1; padding:8px 4px; text-align:center; border-right:1px solid var(--K3); display:flex; flex-direction:column; gap:2px; }
+.sp:last-child{border-right:none;}
+.spv { font-family:var(--FD); font-size:.78rem; color:var(--W1); }
+.spk { font-size:.4rem; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.2); }
+
+/* Amenity tags */
+.vcard-amen { padding:10px 16px 0; display:flex; flex-wrap:wrap; gap:5px; }
+.atag {
+  display:flex; align-items:center; gap:4px;
+  background:var(--K3); border:1px solid var(--K4);
+  padding:4px 8px; font-size:.46rem; letter-spacing:.1em;
+  text-transform:uppercase; color:rgba(255,255,255,.3);
+}
+.atag.g { background:rgba(201,168,76,.08); border-color:rgba(201,168,76,.18); color:rgba(201,168,76,.6); }
+
+/* CTA */
+.vcard-cta { padding:10px 16px 14px; display:flex; align-items:center; justify-content:space-between; }
+.btn-detail {
+  font-size:.48rem; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--G); background:none; border:none; cursor:pointer;
+  display:flex; align-items:center; gap:5px;
+}
+.btn-select {
+  font-size:.48rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--K); background:var(--G); border:none;
+  padding:9px 16px; cursor:pointer; transition:opacity .2s;
+}
+.btn-select:hover{opacity:.88;}
+
+/* ════════════════════════════
+   SCREEN 2 — VEHICLE DETAIL
+════════════════════════════ */
+#s-detail { background:var(--K); }
+
+.det-scroll { flex:1; overflow-y:auto; scrollbar-width:none; }
+.det-scroll::-webkit-scrollbar{display:none;}
+
+/* Hero */
+.det-hero {
+  position:relative; overflow:hidden; flex-shrink:0;
+}
+.det-hero-img {
+  width:100%; height:280px; object-fit:cover; object-position:center 55%;
+  filter:brightness(.75) contrast(1.1) saturate(.8);
+  display:block; transition:opacity .3s;
+}
+.det-hero::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgba(0,0,0,.55) 0%, transparent 45%, rgba(0,0,0,.85) 100%);
+}
+.det-nav {
+  position:absolute; top:44px; left:0; right:0; z-index:5;
+  display:flex; align-items:center; justify-content:space-between; padding:0 20px;
+}
+.det-back {
+  display:flex; align-items:center; gap:8px; cursor:pointer;
+  background:rgba(0,0,0,.55); backdrop-filter:blur(8px);
+  border:1px solid rgba(201,168,76,.2); padding:8px 12px;
+}
+.det-back-lbl { font-size:.5rem; letter-spacing:.28em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+.det-nav-logo { font-family:var(--FD); font-size:.9rem; letter-spacing:.4em; color:var(--W); text-shadow:0 2px 10px rgba(0,0,0,.8); }
+.det-nav-logo span { color:var(--G); }
+.det-photo-credit {
+  position:absolute; bottom:10px; right:14px; z-index:5;
+  font-size:.4rem; letter-spacing:.1em; color:rgba(255,255,255,.25);
+}
+
+/* Thumbnail strip */
+.thumb-strip {
+  display:flex; gap:6px; padding:12px 18px;
+  background:var(--K1); border-bottom:1px solid var(--K3);
+  overflow-x:auto; scrollbar-width:none;
+}
+.thumb-strip::-webkit-scrollbar{display:none;}
+.thumb {
+  width:72px; height:48px; flex-shrink:0; overflow:hidden; cursor:pointer;
+  border:1px solid var(--K3); transition:border-color .2s; position:relative;
+}
+.thumb.on { border-color:var(--G); }
+.thumb img {
+  width:100%; height:100%; object-fit:cover; object-position:center 55%;
+  filter:brightness(.65); transition:filter .2s; opacity:0;
+}
+.thumb img.loaded { opacity:1; }
+.thumb.on img, .thumb:hover img { filter:brightness(.85); }
+.thumb .sk { position:absolute; inset:0; background:var(--K3); animation:sk 1.4s infinite; background-size:200% 100%; background-image:linear-gradient(90deg, var(--K3) 25%, var(--K4) 50%, var(--K3) 75%); }
+.thumb .sk.hide { display:none; }
+
+/* Name block */
+.det-info-block { padding:18px 20px 0; background:var(--K1); }
+.det-category { font-size:.5rem; letter-spacing:.42em; text-transform:uppercase; color:var(--G); margin-bottom:6px; }
+.det-name { font-family:var(--FD); font-size:1.75rem; font-weight:300; color:var(--W); margin-bottom:4px; }
+.det-model { font-size:.55rem; letter-spacing:.14em; color:rgba(255,255,255,.22); text-transform:uppercase; margin-bottom:14px; }
+.det-price-row { display:flex; align-items:baseline; gap:8px; margin-bottom:16px; }
+.det-from { font-size:.48rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.25); }
+.det-price { font-family:var(--FD); font-size:2rem; font-weight:300; color:var(--G); }
+.det-unit { font-size:.48rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.2); }
+
+/* Stats grid */
+.det-stats { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--K3); background:var(--K); }
+.dstat { padding:13px 6px; text-align:center; border-right:1px solid var(--K3); display:flex; flex-direction:column; gap:3px; }
+.dstat:last-child{border-right:none;}
+.dstat-v { font-family:var(--FD); font-size:.95rem; color:var(--W1); }
+.dstat-k { font-size:.4rem; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.2); }
+
+/* Tabs */
+.det-tabs { display:flex; padding:0 20px; border-bottom:1px solid var(--K3); background:var(--K1); overflow-x:auto; scrollbar-width:none; }
+.det-tabs::-webkit-scrollbar{display:none;}
+.dtab {
+  padding:12px 14px; flex-shrink:0; white-space:nowrap;
+  font-size:.48rem; letter-spacing:.24em; text-transform:uppercase;
+  color:rgba(255,255,255,.25); cursor:pointer;
+  border-bottom:2px solid transparent; transition:all .2s;
+}
+.dtab.on { color:var(--G); border-bottom-color:var(--G); }
+
+/* Tab panes */
+.tab-pane { display:none; padding:18px 20px; }
+.tab-pane.on { display:block; }
+
+/* Amenities */
+.amen-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.ac { background:var(--K2); border:1px solid var(--K3); padding:13px 12px; }
+.ac.yes { border-color:rgba(201,168,76,.2); }
+.ac.no { opacity:.4; }
+.ac-ico { width:30px; height:30px; border:1px solid var(--K3); display:flex; align-items:center; justify-content:center; margin-bottom:7px; }
+.ac.yes .ac-ico { border-color:rgba(201,168,76,.3); }
+.ac-name { font-size:.58rem; color:var(--W1); margin-bottom:3px; }
+.ac-desc { font-size:.48rem; color:rgba(255,255,255,.2); line-height:1.5; }
+.ac-status { display:flex; align-items:center; gap:4px; margin-top:5px; font-size:.42rem; letter-spacing:.16em; text-transform:uppercase; }
+.ac.yes .ac-status { color:rgba(201,168,76,.6); }
+.ac.no  .ac-status { color:rgba(255,255,255,.2); }
+.sdot { width:5px; height:5px; border-radius:50%; }
+.ac.yes .sdot { background:var(--G); }
+.ac.no  .sdot { background:var(--K4); }
+
+/* Interior list */
+.int-list { display:flex; flex-direction:column; }
+.ii { display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--K3); }
+.ii:last-child{border-bottom:none;}
+.ii-n { font-family:var(--FD); font-size:.68rem; color:rgba(201,168,76,.3); width:20px; flex-shrink:0; text-align:center; }
+.ii-ico { width:28px; height:28px; border:1px solid var(--K3); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.ii-name { font-size:.62rem; color:var(--W1); margin-bottom:2px; }
+.ii-desc { font-size:.48rem; color:rgba(255,255,255,.2); }
+.ii-ck { margin-left:auto; flex-shrink:0; width:18px; height:18px; border-radius:50%; background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.3); display:flex; align-items:center; justify-content:center; }
+
+/* Footer */
+.det-footer {
+  background:rgba(8,8,8,.97); backdrop-filter:blur(20px);
+  border-top:1px solid var(--K3); padding:14px 20px 28px; flex-shrink:0;
+}
+.det-foot-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.det-foot-price { font-family:var(--FD); font-size:1.5rem; color:var(--G); }
+.avail { display:flex; align-items:center; gap:6px; font-size:.48rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.3); }
+.avail-dot { width:6px; height:6px; border-radius:50%; background:#4CAF50; box-shadow:0 0 8px rgba(76,175,80,.5); }
+.det-book-btn {
+  width:100%; background:var(--G); border:none; padding:14px; font-family:var(--FB);
+  font-size:.58rem; letter-spacing:.35em; text-transform:uppercase; color:var(--K); cursor:pointer;
+  position:relative; overflow:hidden; transition:opacity .2s;
+}
+.det-book-btn::after {
+  content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+  animation:shimmer 2.8s ease-in-out infinite;
+}
+@keyframes shimmer{to{left:160%;}}
+.det-book-btn:hover{opacity:.88;}
+
+/* Bottom nav */
+.bottom-nav {
+  position:absolute; bottom:0; left:0; right:0; height:80px;
+  background:rgba(8,8,8,.97); backdrop-filter:blur(20px);
+  border-top:1px solid var(--K3);
+  display:flex; align-items:center; justify-content:space-around; z-index:500;
+}
+.ni { display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; padding:10px 16px; }
+.nl { font-size:.46rem; letter-spacing:.22em; text-transform:uppercase; color:rgba(255,255,255,.25); }
+.ni.on .nl { color:var(--G); }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ══════════════════════════════
+       SCREEN 1 — CATALOG
+  ══════════════════════════════ -->
+  <div class="screen active" id="s-list">
+    <div class="list-header">
+      <div class="list-header-row">
+        <div class="eyebrow" style="margin-bottom:0;">Seleccionar vehículo</div>
+        <div class="logo">AUT<span>U</span>M</div>
+        <div style="width:32px;height:32px;border:1px solid var(--K3);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+          <svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.5)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+      </div>
+      <div class="h-title">Nuestra <em>flota</em></div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="ftab on" onclick="filterTab(this)">Todos</div>
+      <div class="ftab" onclick="filterTab(this)">Executive SUV</div>
+      <div class="ftab" onclick="filterTab(this)">Full-Size</div>
+      <div class="ftab" onclick="filterTab(this)">Sedán</div>
+      <div class="ftab" onclick="filterTab(this)">Van</div>
+    </div>
+
+    <div class="list-scroll" id="list-scroll">
+
+      <!-- ── CARD 1: Tahoe 2021 ── -->
+      <div class="vcard featured" onclick="openDetail(0)">
+        <div class="vcard-badge">Más solicitado</div>
+        <div class="vcard-img-wrap">
+          <div class="sk" id="sk-0"></div>
+          <img
+            src="https://images.pexels.com/photos/11091622/pexels-photo-11091622.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Chevrolet Tahoe 2021 Z71"
+            onload="onImgLoad(this,'sk-0')"
+            onerror="onImgErr(this,'sk-0')">
+          <div class="vcard-img-label">Chevrolet Tahoe 2021 Z71</div>
+        </div>
+        <div class="vcard-info">
+          <div>
+            <div class="vcard-name">Tahoe High Country</div>
+            <div class="vcard-sub">Full-Size SUV · 8 plazas · V8</div>
+          </div>
+          <div class="vcard-price">
+            <span class="vcard-from">desde</span>
+            <div class="vcard-amt">$920</div>
+          </div>
+        </div>
+        <div class="vcard-specs">
+          <div class="sp"><div class="spv">8</div><div class="spk">Plazas</div></div>
+          <div class="sp"><div class="spv">5</div><div class="spk">Maletas</div></div>
+          <div class="sp"><div class="spv">A/C</div><div class="spk">Tri-zona</div></div>
+          <div class="sp"><div class="spv">★4.9</div><div class="spk">Rating</div></div>
+        </div>
+        <div class="vcard-amen">
+          <div class="atag g">WiFi 5G</div>
+          <div class="atag g">USB-C x4</div>
+          <div class="atag g">Privacidad</div>
+          <div class="atag">Agua Fiji</div>
+          <div class="atag">+5 más</div>
+        </div>
+        <div class="vcard-cta">
+          <button class="btn-detail" onclick="openDetail(0)">Ver detalles <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          <button class="btn-select">Seleccionar</button>
+        </div>
+      </div>
+
+      <!-- ── CARD 2: Black luxury SUV night ── -->
+      <div class="vcard" onclick="openDetail(1)">
+        <div class="vcard-img-wrap">
+          <div class="sk" id="sk-1"></div>
+          <img
+            src="https://images.pexels.com/photos/28571809/pexels-photo-28571809.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Black SUV parked at night"
+            onload="onImgLoad(this,'sk-1')"
+            onerror="onImgErr(this,'sk-1')">
+          <div class="vcard-img-label">Tahoe RST Sport · Edición noche</div>
+        </div>
+        <div class="vcard-info">
+          <div>
+            <div class="vcard-name">Tahoe RST Sport</div>
+            <div class="vcard-sub">Executive SUV · 7 plazas</div>
+          </div>
+          <div class="vcard-price">
+            <span class="vcard-from">desde</span>
+            <div class="vcard-amt" style="color:rgba(201,168,76,.8)">$850</div>
+          </div>
+        </div>
+        <div class="vcard-specs">
+          <div class="sp"><div class="spv">7</div><div class="spk">Plazas</div></div>
+          <div class="sp"><div class="spv">4</div><div class="spk">Maletas</div></div>
+          <div class="sp"><div class="spv">A/C</div><div class="spk">Dual</div></div>
+          <div class="sp"><div class="spv">★4.8</div><div class="spk">Rating</div></div>
+        </div>
+        <div class="vcard-amen">
+          <div class="atag g">WiFi</div>
+          <div class="atag g">USB-C</div>
+          <div class="atag">Agua</div>
+          <div class="atag">+3 más</div>
+        </div>
+        <div class="vcard-cta">
+          <button class="btn-detail" onclick="openDetail(1)">Ver detalles <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          <button class="btn-select">Seleccionar</button>
+        </div>
+      </div>
+
+      <!-- ── CARD 3: Black luxury sedan ── -->
+      <div class="vcard" onclick="openDetail(2)">
+        <div class="vcard-img-wrap">
+          <div class="sk" id="sk-2"></div>
+          <img
+            src="https://images.pexels.com/photos/18346535/pexels-photo-18346535.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Black luxury sedan"
+            onload="onImgLoad(this,'sk-2')"
+            onerror="onImgErr(this,'sk-2')">
+          <div class="vcard-img-label">Sedán Premium · Prestige</div>
+        </div>
+        <div class="vcard-info">
+          <div>
+            <div class="vcard-name">Sedán Prestige</div>
+            <div class="vcard-sub">Luxury Sedan · 4 plazas</div>
+          </div>
+          <div class="vcard-price">
+            <span class="vcard-from">desde</span>
+            <div class="vcard-amt" style="color:rgba(201,168,76,.8)">$650</div>
+          </div>
+        </div>
+        <div class="vcard-specs">
+          <div class="sp"><div class="spv">4</div><div class="spk">Plazas</div></div>
+          <div class="sp"><div class="spv">2</div><div class="spk">Maletas</div></div>
+          <div class="sp"><div class="spv">A/C</div><div class="spk">4-zona</div></div>
+          <div class="sp"><div class="spv">★5.0</div><div class="spk">Rating</div></div>
+        </div>
+        <div class="vcard-amen">
+          <div class="atag g">WiFi 5G</div>
+          <div class="atag g">Masaje</div>
+          <div class="atag g">Pantallas</div>
+          <div class="atag">Champán</div>
+          <div class="atag">+6 más</div>
+        </div>
+        <div class="vcard-cta">
+          <button class="btn-detail" onclick="openDetail(2)">Ver detalles <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          <button class="btn-select">Seleccionar</button>
+        </div>
+      </div>
+
+      <!-- ── CARD 4: SUV luxury starry night ── -->
+      <div class="vcard" onclick="openDetail(3)">
+        <div class="vcard-badge wh">Corporativo</div>
+        <div class="vcard-img-wrap">
+          <div class="sk" id="sk-3"></div>
+          <img
+            src="https://images.pexels.com/photos/30962201/pexels-photo-30962201.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Luxury SUV starry night"
+            onload="onImgLoad(this,'sk-3')"
+            onerror="onImgErr(this,'sk-3')">
+          <div class="vcard-img-label">Van Ejecutiva · Noche</div>
+        </div>
+        <div class="vcard-info">
+          <div>
+            <div class="vcard-name">Van Ejecutiva XL</div>
+            <div class="vcard-sub">Executive Van · 6 plazas</div>
+          </div>
+          <div class="vcard-price">
+            <span class="vcard-from">desde</span>
+            <div class="vcard-amt" style="color:rgba(201,168,76,.8)">$1,200</div>
+          </div>
+        </div>
+        <div class="vcard-specs">
+          <div class="sp"><div class="spv">6</div><div class="spk">Plazas</div></div>
+          <div class="sp"><div class="spv">6</div><div class="spk">Maletas</div></div>
+          <div class="sp"><div class="spv">A/C</div><div class="spk">Multi</div></div>
+          <div class="sp"><div class="spv">★4.9</div><div class="spk">Rating</div></div>
+        </div>
+        <div class="vcard-amen">
+          <div class="atag g">WiFi</div>
+          <div class="atag g">Mesa trabajo</div>
+          <div class="atag g">Pantallas</div>
+          <div class="atag">+3 más</div>
+        </div>
+        <div class="vcard-cta">
+          <button class="btn-detail" onclick="openDetail(3)">Ver detalles <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          <button class="btn-select">Seleccionar</button>
+        </div>
+      </div>
+
+    </div><!-- /list-scroll -->
+
+    <div class="bottom-nav">
+      <div class="ni"><svg width="18" height="18" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><div class="nl">Inicio</div></div>
+      <div class="ni on"><svg width="18" height="18" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><div class="nl" style="color:var(--G)">Flota</div></div>
+      <div class="ni"><svg width="18" height="18" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg><div class="nl">Ahora</div></div>
+      <div class="ni"><svg width="18" height="18" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="nl">Perfil</div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCREEN 2 — DETAIL
+  ══════════════════════════════ -->
+  <div class="screen" id="s-detail">
+    <div class="det-scroll">
+
+      <!-- Hero photo -->
+      <div class="det-hero">
+        <img id="det-hero-img" class="det-hero-img" src="" alt="">
+        <div class="det-nav">
+          <div class="det-back" onclick="goList()">
+            <svg width="10" height="10" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            <span class="det-back-lbl">Flota</span>
+          </div>
+          <div class="det-nav-logo">AUT<span>U</span>M</div>
+        </div>
+        <div class="det-photo-credit" id="det-credit">© Pexels</div>
+      </div>
+
+      <!-- Thumbnail strip -->
+      <div class="thumb-strip" id="thumb-strip"></div>
+
+      <!-- Info -->
+      <div class="det-info-block">
+        <div class="det-category" id="d-cat"></div>
+        <div class="det-name" id="d-name"></div>
+        <div class="det-model" id="d-model"></div>
+        <div class="det-price-row">
+          <span class="det-from">desde</span>
+          <span class="det-price" id="d-price"></span>
+          <span class="det-unit">por traslado</span>
+        </div>
+        <div class="det-stats">
+          <div class="dstat"><div class="dstat-v" id="ds0"></div><div class="dstat-k">Plazas</div></div>
+          <div class="dstat"><div class="dstat-v" id="ds1"></div><div class="dstat-k">Maletas</div></div>
+          <div class="dstat"><div class="dstat-v" id="ds2"></div><div class="dstat-k">Motor</div></div>
+          <div class="dstat"><div class="dstat-v" id="ds3"></div><div class="dstat-k">ETA</div></div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="det-tabs">
+        <div class="dtab on" onclick="switchTab(this,'ta')">Comodidades</div>
+        <div class="dtab" onclick="switchTab(this,'tb')">Interior</div>
+        <div class="dtab" onclick="switchTab(this,'tc')">Ficha técnica</div>
+      </div>
+
+      <!-- TAB A: Amenities -->
+      <div class="tab-pane on" id="ta">
+        <div class="amen-grid">
+          <div class="ac yes"><div class="ac-ico"><svg width="15" height="15" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="#c9a84c"/></svg></div><div class="ac-name">WiFi 5G Premium</div><div class="ac-desc">200 Mbps · ilimitado.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="15" height="15" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg></div><div class="ac-name">USB-C 65W × 4</div><div class="ac-desc">Carga rápida todos los asientos.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="15" height="15" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="ac-name">Cristales privados</div><div class="ac-desc">Nivel 5 · separador conductor.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="15" height="15" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div><div class="ac-name">Agua Fiji</div><div class="ac-desc">2 botellas frías por pasajero.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="15" height="15" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="ac-name">Audio premium</div><div class="ac-desc">Bose 14 altavoces · surround.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="15" height="15" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg></div><div class="ac-name">Pantalla trasera</div><div class="ac-desc">12.6" HD · HDMI · streaming.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="15" height="15" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/></svg></div><div class="ac-name">A/C Tri-zona</div><div class="ac-desc">Control independiente por zona.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="15" height="15" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="ac-name">Prensa de lujo</div><div class="ac-desc">FT · WSJ · Reforma · El País.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac no"><div class="ac-ico"><svg width="15" height="15" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="ac-name">Masaje en asiento</div><div class="ac-desc">Solo en Sedán Prestige.</div><div class="ac-status"><div class="sdot"></div>No incluido</div></div>
+          <div class="ac no"><div class="ac-ico"><svg width="15" height="15" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M3 6h.01M3 12h.01"/></svg></div><div class="ac-name">Mesa de trabajo</div><div class="ac-desc">Solo en Van Ejecutiva XL.</div><div class="ac-status"><div class="sdot"></div>No incluido</div></div>
+        </div>
+      </div>
+
+      <!-- TAB B: Interior -->
+      <div class="tab-pane" id="tb">
+        <div class="int-list">
+          <div class="ii"><div class="ii-n">01</div><div class="ii-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div><div><div class="ii-name">Asientos cuero perforado</div><div class="ii-desc">Ventilados + calefaccionados · 18 ajustes</div></div><div class="ii-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+          <div class="ii"><div class="ii-n">02</div><div class="ii-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div><div class="ii-name">Pantalla 10.2" Infotainment</div><div class="ii-desc">Android Auto · Apple CarPlay</div></div><div class="ii-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+          <div class="ii"><div class="ii-n">03</div><div class="ii-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div class="ii-name">Techo panorámico Sky View</div><div class="ii-desc">Dual panel · parasol eléctrico</div></div><div class="ii-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+          <div class="ii"><div class="ii-n">04</div><div class="ii-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2"/></svg></div><div><div class="ii-name">Iluminación LED 16 colores</div><div class="ii-desc">Ajuste automático por hora del día</div></div><div class="ii-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+          <div class="ii"><div class="ii-n">05</div><div class="ii-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3m1 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg></div><div><div class="ii-name">Carga inalámbrica Qi 15W</div><div class="ii-desc">2 pads · iPhone + Android</div></div><div class="ii-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+          <div class="ii"><div class="ii-n">06</div><div class="ii-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg></div><div><div class="ii-name">Nevera integrada 6L</div><div class="ii-desc">Bebidas frías · acceso trasero</div></div><div class="ii-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+          <div class="ii"><div class="ii-n">07</div><div class="ii-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2"/></svg></div><div><div class="ii-name">OnStar 4G LTE hotspot</div><div class="ii-desc">Hasta 7 dispositivos simultáneos</div></div><div class="ii-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+        </div>
+      </div>
+
+      <!-- TAB C: Specs -->
+      <div class="tab-pane" id="tc">
+        <div id="specs-body"></div>
+        <div style="margin-top:14px;padding:13px;background:var(--K);border:1px solid rgba(201,168,76,.12);font-size:.52rem;color:rgba(255,255,255,.22);letter-spacing:.06em;line-height:1.8;">
+          Unidad inspeccionada y certificada por el equipo técnico AUTUM. Mantenimiento preventivo cada 5,000 km. Seguro todo riesgo incluido.
+        </div>
+      </div>
+
+    </div><!-- /det-scroll -->
+
+    <div class="det-footer">
+      <div class="det-foot-row">
+        <div class="det-foot-price" id="d-foot-price">$920</div>
+        <div class="avail"><div class="avail-dot"></div>Disponible ahora</div>
+      </div>
+      <button class="det-book-btn">Reservar este vehículo</button>
+    </div>
+  </div><!-- /s-detail -->
+
+</div><!-- /phone -->
+
+<div style="position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  font-size:.46rem;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(201,168,76,.15);pointer-events:none;">
+  AUTUM · Fotos: Pexels (licencia libre comercial)
+</div>
+
+<script>
+const vehicles = [
+  {
+    name: 'Tahoe High Country',
+    cat: 'Full-Size Executive SUV · Chevrolet',
+    model: 'Chevrolet Tahoe 2021 · High Country · 6.2L V8 · 420 hp',
+    price: '$920',
+    stats: ['8', '5', 'V8 6.2L', '4 min'],
+    photos: [
+      { src:'https://images.pexels.com/photos/11091622/pexels-photo-11091622.jpeg?auto=compress&cs=tinysrgb&w=800', credit:'© Abdulwahab Alawadhi · Pexels' },
+      { src:'https://images.pexels.com/photos/28571809/pexels-photo-28571809.jpeg?auto=compress&cs=tinysrgb&w=800', credit:'© Pexels' },
+      { src:'https://images.pexels.com/photos/30962201/pexels-photo-30962201.jpeg?auto=compress&cs=tinysrgb&w=800', credit:'© Erik Mclean · Pexels' },
+    ],
+    specs:[
+      ['Motor','V8 6.2L EcoTec3 · 420 hp'],['Transmisión','Automática 10 velocidades'],
+      ['Torque','460 lb·ft'],['0–100 km/h','6.1 s'],
+      ['Tracción','4WD inteligente'],['Suspensión','Magnetic Ride Control'],
+      ['Rines','22" forjados negro pulido'],['Carga max.','8,400 lbs remolque'],
+    ]
+  },
+  {
+    name: 'Tahoe RST Sport',
+    cat: 'Executive SUV · Sport Edition',
+    model: 'Chevrolet Tahoe 2022 · RST · 5.3L V8 · 355 hp',
+    price: '$850',
+    stats: ['7', '4', 'V8 5.3L', '6 min'],
+    photos: [
+      { src:'https://images.pexels.com/photos/28571809/pexels-photo-28571809.jpeg?auto=compress&cs=tinysrgb&w=800', credit:'© Pexels' },
+      { src:'https://images.pexels.com/photos/11091622/pexels-photo-11091622.jpeg?auto=compress&cs=tinysrgb&w=800', credit:'© Abdulwahab Alawadhi · Pexels' },
+    ],
+    specs:[
+      ['Motor','V8 5.3L EcoTec3 · 355 hp'],['Transmisión','Automática 10 velocidades'],
+      ['Tracción','RWD / 4WD seleccionable'],['Rines','22" negro alto brillo'],
+      ['Grilla','Monochrome Black Ice'],['0–100 km/h','7.1 s'],
+    ]
+  },
+  {
+    name: 'Sedán Prestige',
+    cat: 'Luxury Sedan · Primera Clase',
+    model: 'Sedán Ejecutivo de Alta Gama · V8 4.7L',
+    price: '$650',
+    stats: ['4', '2', 'V8 4.7L', '6 min'],
+    photos: [
+      { src:'https://images.pexels.com/photos/18346535/pexels-photo-18346535.jpeg?auto=compress&cs=tinysrgb&w=800', credit:'© WAVYVISUALS · Pexels' },
+      { src:'https://images.pexels.com/photos/3786091/pexels-photo-3786091.jpeg?auto=compress&cs=tinysrgb&w=800', credit:'© Aleksey Kuprikov · Pexels' },
+    ],
+    specs:[
+      ['Motor','V8 4.7L · 340 hp'],['Transmisión','Automática 9 velocidades'],
+      ['Masaje','4 zonas · 8 programas'],['Pantallas','2× 11.6" 4K traseras'],
+      ['Audio','20 altavoces · Burmester'],['Perfume','Sistema aromático integrado'],
+    ]
+  },
+  {
+    name: 'Van Ejecutiva XL',
+    cat: 'Executive Van · Corporativo',
+    model: 'Van de Alta Capacidad · Turbo Diesel 3.0L',
+    price: '$1,200',
+    stats: ['6', '6', 'TD 3.0L', '8 min'],
+    photos: [
+      { src:'https://images.pexels.com/photos/30962201/pexels-photo-30962201.jpeg?auto=compress&cs=tinysrgb&w=800', credit:'© Erik Mclean · Pexels' },
+      { src:'https://images.pexels.com/photos/28571809/pexels-photo-28571809.jpeg?auto=compress&cs=tinysrgb&w=800', credit:'© Pexels' },
+    ],
+    specs:[
+      ['Motor','Turbo Diesel 3.0L · 277 hp'],['Capacidad','6 pasajeros + maletero extra'],
+      ['Mesa trabajo','Desplegable premium'],['Pantallas','3× pantallas independientes'],
+      ['A/C','Sistema multi-zona independiente'],['Rines','20" aluminio forjado'],
+    ]
+  }
+];
+
+let curVehicle = 0, curPhoto = 0;
+
+function onImgLoad(img, skId) {
+  img.classList.add('loaded');
+  const sk = document.getElementById(skId);
+  if (sk) sk.classList.add('hide');
+}
+function onImgErr(img, skId) {
+  const sk = document.getElementById(skId);
+  if (sk) {
+    sk.style.animation='none';
+    sk.style.background='var(--K3)';
+    sk.innerHTML='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;"><svg width="36" height="24" viewBox="0 0 40 26" fill="none"><rect x="1" y="9" width="38" height="14" rx="3" stroke="rgba(201,168,76,.3)" stroke-width="1.2"/><path d="M6 9L10 2H28L34 9" stroke="rgba(201,168,76,.3)" stroke-width="1.2"/><circle cx="10" cy="22" r="3" fill="rgba(201,168,76,.2)"/><circle cx="30" cy="22" r="3" fill="rgba(201,168,76,.2)"/></svg><span style="font-size:.44rem;letter-spacing:.2em;color:rgba(201,168,76,.3);text-transform:uppercase;">Sin conexión</span></div>';
+  }
+}
+
+function openDetail(idx) {
+  curVehicle = idx; curPhoto = 0;
+  const v = vehicles[idx];
+
+  // Hero
+  const hero = document.getElementById('det-hero-img');
+  hero.src = v.photos[0].src;
+  hero.alt = v.name;
+  hero.style.opacity = '1';
+  document.getElementById('det-credit').textContent = v.photos[0].credit;
+
+  // Thumbnails
+  const strip = document.getElementById('thumb-strip');
+  strip.innerHTML = '';
+  v.photos.forEach((p, i) => {
+    const t = document.createElement('div');
+    t.className = 'thumb' + (i===0?' on':'');
+    t.innerHTML = `<div class="sk" id="tsk-${i}"></div><img src="${p.src}" alt="" onload="onThumbLoad(this,'tsk-${i}')" onerror="onThumbErr('tsk-${i}')">`;
+    t.onclick = () => switchPhoto(i);
+    strip.appendChild(t);
+  });
+
+  // Info
+  document.getElementById('d-cat').textContent = v.cat;
+  document.getElementById('d-name').textContent = v.name;
+  document.getElementById('d-model').textContent = v.model;
+  document.getElementById('d-price').textContent = v.price;
+  document.getElementById('d-foot-price').textContent = v.price;
+  v.stats.forEach((s,i) => { document.getElementById('ds'+i).textContent = s; });
+
+  // Specs
+  const sb = document.getElementById('specs-body');
+  sb.innerHTML = v.specs.map(([k,val],i) =>
+    `<div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:${i<v.specs.length-1?'1px solid var(--K3)':'none'}">
+      <span style="font-size:.58rem;color:rgba(255,255,255,.3);">${k}</span>
+      <span style="font-size:.58rem;color:var(--W1);">${val}</span>
+    </div>`
+  ).join('');
+
+  // Tab reset
+  switchTab(document.querySelector('.dtab'), 'ta');
+
+  document.getElementById('s-list').classList.remove('active');
+  document.getElementById('s-detail').classList.add('active');
+  document.querySelector('.det-scroll').scrollTop = 0;
+}
+
+function onThumbLoad(img, skId) {
+  img.classList.add('loaded');
+  const sk = document.getElementById(skId);
+  if (sk) sk.classList.add('hide');
+}
+function onThumbErr(skId) {
+  const sk = document.getElementById(skId);
+  if (sk) { sk.style.animation='none'; sk.style.background='var(--K3)'; }
+}
+
+function switchPhoto(idx) {
+  curPhoto = idx;
+  const v = vehicles[curVehicle];
+  const hero = document.getElementById('det-hero-img');
+  hero.style.opacity = '0';
+  setTimeout(() => {
+    hero.src = v.photos[idx].src;
+    hero.style.opacity = '1';
+    document.getElementById('det-credit').textContent = v.photos[idx].credit;
+  }, 160);
+  hero.style.transition = 'opacity .16s';
+  document.querySelectorAll('.thumb').forEach((t,i) => t.classList.toggle('on', i===idx));
+}
+
+function goList() {
+  document.getElementById('s-detail').classList.remove('active');
+  document.getElementById('s-list').classList.add('active');
+}
+
+function switchTab(el, paneId) {
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('on'));
+  if (el) el.classList.add('on');
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('on'));
+  document.getElementById(paneId)?.classList.add('on');
+}
+
+function filterTab(el) {
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+}
+</script>
+</body>
+</html>

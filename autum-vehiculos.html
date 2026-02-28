@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AUTUM — Catálogo de Vehículos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Raleway:wght@100;200;300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --K:#000; --K1:#0a0a0a; --K2:#111; --K3:#1a1a1a; --K4:#252525; --K5:#2e2e2e;
+  --W:#fff; --W1:#f8f4ee; --W2:#ede8df;
+  --G:#c9a84c; --G1:#e8c96a; --G2:#a8832a; --G3:#f5e4b0; --G4:#7a5e1a;
+  --Go:rgba(201,168,76,.1); --Gb:rgba(201,168,76,.25); --Gs:rgba(201,168,76,.05);
+  --FD:'Playfair Display',serif;
+  --FC:'Cormorant Garamond',serif;
+  --FB:'Raleway',sans-serif;
+  --r:0px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body {
+  background:#060606;
+  font-family:var(--FB);
+  font-weight:300;
+  color:var(--W1);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+}
+
+/* ─ PHONE SHELL ─ */
+.phone {
+  width:390px;
+  height:844px;
+  background:var(--K1);
+  border-radius:48px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:
+    0 0 0 1px rgba(201,168,76,.18),
+    0 0 0 2px #000,
+    0 50px 130px rgba(0,0,0,.9),
+    0 8px 40px rgba(201,168,76,.04);
+}
+.notch {
+  position:absolute;
+  top:0; left:50%; transform:translateX(-50%);
+  width:120px; height:34px;
+  background:var(--K);
+  border-radius:0 0 22px 22px;
+  z-index:1000;
+}
+
+/* ─ SCREENS ─ */
+.screen {
+  position:absolute; inset:0;
+  opacity:0; pointer-events:none;
+  transition:opacity .35s ease;
+  display:flex; flex-direction:column;
+  overflow:hidden;
+}
+.screen.active { opacity:1; pointer-events:all; }
+
+/* ══════════════════════════════
+   SCREEN: CATALOG LIST
+══════════════════════════════ */
+#sc-list { background:var(--K1); }
+
+.cat-header {
+  padding:50px 24px 18px;
+  border-bottom:1px solid var(--K3);
+  flex-shrink:0;
+}
+.cat-header-top {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:16px;
+}
+.back-row {
+  display:flex; align-items:center; gap:10px;
+  cursor:pointer;
+}
+.back-ico {
+  width:32px; height:32px; border:1px solid var(--K3);
+  display:flex; align-items:center; justify-content:center;
+  transition:border-color .2s;
+}
+.back-ico:hover { border-color:var(--G); }
+.back-label {
+  font-size:.55rem; letter-spacing:.35em; text-transform:uppercase;
+  color:rgba(255,255,255,.25);
+}
+.header-logo {
+  font-family:var(--FD); font-size:1rem; letter-spacing:.4em;
+  color:var(--W);
+}
+.header-logo span { color:var(--G); }
+
+.cat-title-block { padding:0 0 4px; }
+.cat-eyebrow {
+  font-size:.52rem; letter-spacing:.45em; text-transform:uppercase;
+  color:var(--G); margin-bottom:8px;
+}
+.cat-title {
+  font-family:var(--FD); font-size:1.7rem; font-weight:300; line-height:1.15;
+  color:var(--W);
+}
+.cat-title em { font-style:italic; color:var(--G); }
+
+/* Filter tabs */
+.filter-bar {
+  display:flex; gap:0; padding:0 24px 0;
+  overflow-x:auto; scrollbar-width:none;
+  border-bottom:1px solid var(--K3);
+  flex-shrink:0;
+}
+.filter-bar::-webkit-scrollbar { display:none; }
+.ftab {
+  padding:12px 16px; flex-shrink:0;
+  font-size:.52rem; letter-spacing:.3em; text-transform:uppercase;
+  color:rgba(255,255,255,.25); cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:all .2s; white-space:nowrap;
+}
+.ftab.on { color:var(--G); border-bottom-color:var(--G); }
+
+/* List body */
+.cat-body {
+  flex:1; overflow-y:auto; padding:20px 20px 100px;
+  scrollbar-width:none;
+}
+.cat-body::-webkit-scrollbar { display:none; }
+
+/* ─ VEHICLE CARD ─ */
+.vcard {
+  background:var(--K2); border:1px solid var(--K3);
+  margin-bottom:14px; cursor:pointer;
+  transition:border-color .3s, transform .2s;
+  position:relative; overflow:hidden;
+}
+.vcard::before {
+  content:''; position:absolute;
+  left:0; top:0; bottom:0; width:2px;
+  background:var(--G); transform:scaleY(0);
+  transition:transform .3s ease; transform-origin:bottom;
+}
+.vcard:hover { border-color:var(--Gb); }
+.vcard:hover::before { transform:scaleY(1); }
+.vcard.featured { border-color:rgba(201,168,76,.4); }
+.vcard.featured::before { transform:scaleY(1); }
+
+.vcard-badge {
+  position:absolute; top:12px; right:12px;
+  font-size:.45rem; letter-spacing:.3em; text-transform:uppercase;
+  color:var(--K); background:var(--G);
+  padding:4px 8px;
+}
+.vcard-badge.new { background:var(--W1); color:var(--K); }
+
+/* Vehicle illustration area */
+.vcard-visual {
+  background:var(--K); padding:28px 24px 20px;
+  position:relative; overflow:hidden;
+}
+.vcard-visual-bg {
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse at 60% 50%, rgba(201,168,76,.04) 0%, transparent 70%);
+}
+.vcard-visual svg { position:relative; z-index:1; }
+.vcard-model-tag {
+  position:absolute; bottom:10px; left:16px;
+  font-size:.48rem; letter-spacing:.3em; text-transform:uppercase;
+  color:rgba(201,168,76,.3);
+}
+
+/* Card info */
+.vcard-info { padding:16px 18px 14px; }
+.vcard-row1 {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  margin-bottom:8px;
+}
+.vcard-name {
+  font-family:var(--FD); font-size:1rem; font-weight:300; color:var(--W);
+}
+.vcard-cat {
+  font-size:.5rem; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(255,255,255,.25); margin-top:3px;
+}
+.vcard-price-block { text-align:right; }
+.vcard-price-from {
+  font-size:.45rem; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(255,255,255,.2); display:block;
+}
+.vcard-price {
+  font-family:var(--FD); font-size:1.2rem; color:var(--G);
+}
+.vcard-currency { font-size:.65rem; opacity:.6; }
+
+/* Specs strip */
+.vcard-specs {
+  display:flex; gap:0; border-top:1px solid var(--K3);
+  margin:0 0 0;
+}
+.spec-pill {
+  flex:1; padding:8px 6px; text-align:center;
+  border-right:1px solid var(--K3);
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+}
+.spec-pill:last-child { border-right:none; }
+.spec-val {
+  font-family:var(--FD); font-size:.8rem; color:var(--W1);
+}
+.spec-key {
+  font-size:.45rem; letter-spacing:.15em; text-transform:uppercase;
+  color:rgba(255,255,255,.2);
+}
+
+/* Amenity quick-row */
+.vcard-amenities {
+  padding:10px 18px 14px;
+  display:flex; flex-wrap:wrap; gap:6px;
+}
+.amen-tag {
+  display:flex; align-items:center; gap:5px;
+  background:var(--K3); border:1px solid var(--K4);
+  padding:5px 9px;
+  font-size:.48rem; letter-spacing:.15em; text-transform:uppercase;
+  color:rgba(255,255,255,.4);
+}
+.amen-tag.gold {
+  background:rgba(201,168,76,.08); border-color:rgba(201,168,76,.2);
+  color:rgba(201,168,76,.7);
+}
+.amen-tag svg { flex-shrink:0; }
+
+/* View detail link */
+.vcard-cta {
+  padding:0 18px 16px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.vcard-detail-btn {
+  font-size:.52rem; letter-spacing:.3em; text-transform:uppercase;
+  color:var(--G); background:none; border:none; cursor:pointer;
+  display:flex; align-items:center; gap:6px;
+}
+.vcard-select-btn {
+  font-size:.52rem; letter-spacing:.25em; text-transform:uppercase;
+  color:var(--K); background:var(--G); border:none;
+  padding:9px 18px; cursor:pointer;
+  transition:opacity .2s;
+}
+.vcard-select-btn:hover { opacity:.88; }
+
+/* ══════════════════════════════
+   SCREEN: VEHICLE DETAIL
+══════════════════════════════ */
+#sc-detail { background:var(--K); }
+
+.det-scroll {
+  flex:1; overflow-y:auto; scrollbar-width:none;
+}
+.det-scroll::-webkit-scrollbar { display:none; }
+
+/* Hero */
+.det-hero {
+  background:var(--K); padding:50px 0 0;
+  position:relative; overflow:hidden;
+}
+.det-hero-bg {
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 60%, rgba(201,168,76,.07) 0%, transparent 65%);
+}
+.det-hero-nav {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 24px; margin-bottom:28px; position:relative; z-index:2;
+}
+.det-back {
+  display:flex; align-items:center; gap:8px; cursor:pointer;
+}
+.det-back-ico {
+  width:32px; height:32px; border:1px solid var(--K3);
+  display:flex; align-items:center; justify-content:center;
+}
+.det-back-lbl {
+  font-size:.52rem; letter-spacing:.3em; text-transform:uppercase;
+  color:rgba(255,255,255,.3);
+}
+.det-share {
+  width:32px; height:32px; border:1px solid var(--K3);
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+
+/* Tier badge */
+.det-tier {
+  position:relative; z-index:2;
+  margin:0 24px 12px;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.det-tier-ico { width:28px; height:28px; }
+.det-tier-name {
+  font-size:.5rem; letter-spacing:.4em; text-transform:uppercase; color:var(--G);
+}
+.det-tier-divider { width:20px; height:1px; background:rgba(201,168,76,.3); }
+
+/* Vehicle SVG showcase */
+.det-car-stage {
+  padding:10px 20px 30px; position:relative; z-index:2;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* Carousel dots */
+.det-dots {
+  display:flex; justify-content:center; gap:8px; padding-bottom:20px;
+  position:relative; z-index:2;
+}
+.det-dot {
+  width:20px; height:2px; background:var(--K3); cursor:pointer;
+  transition:all .2s;
+}
+.det-dot.on { background:var(--G); width:32px; }
+
+/* Name section */
+.det-name-sec {
+  padding:24px 24px 0;
+  background:var(--K1); border-top:1px solid var(--K3);
+}
+.det-category {
+  font-size:.52rem; letter-spacing:.45em; text-transform:uppercase;
+  color:var(--G); margin-bottom:8px;
+}
+.det-name {
+  font-family:var(--FD); font-size:2rem; font-weight:300; color:var(--W);
+  margin-bottom:4px;
+}
+.det-subtitle {
+  font-family:var(--FC); font-style:italic; font-size:1rem;
+  color:rgba(255,255,255,.25); margin-bottom:20px;
+}
+.det-price-row {
+  display:flex; align-items:baseline; gap:8px; margin-bottom:20px;
+}
+.det-price-from {
+  font-size:.52rem; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(255,255,255,.25);
+}
+.det-price {
+  font-family:var(--FD); font-size:2.4rem; font-weight:300; color:var(--G);
+}
+.det-price-unit {
+  font-size:.55rem; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(255,255,255,.2);
+}
+
+/* Stats grid */
+.det-stats {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--K3); background:var(--K);
+}
+.det-stat {
+  padding:16px 10px; text-align:center;
+  border-right:1px solid var(--K3);
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+}
+.det-stat:last-child { border-right:none; }
+.det-stat-val {
+  font-family:var(--FD); font-size:1.1rem; color:var(--W1);
+}
+.det-stat-key {
+  font-size:.42rem; letter-spacing:.15em; text-transform:uppercase;
+  color:rgba(255,255,255,.2);
+}
+
+/* Sections in detail */
+.det-section {
+  padding:24px 24px 0;
+  background:var(--K1);
+}
+.det-section-label {
+  font-size:.52rem; letter-spacing:.42em; text-transform:uppercase;
+  color:var(--G); margin-bottom:14px;
+  display:flex; align-items:center; gap:10px;
+}
+.det-section-label::after {
+  content:''; flex:1; height:1px; background:rgba(201,168,76,.15);
+}
+
+/* ─ AMENITIES FULL GRID ─ */
+.amenities-full {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:8px; padding-bottom:24px;
+}
+.amen-card {
+  background:var(--K2); border:1px solid var(--K3);
+  padding:16px 14px;
+  display:flex; flex-direction:column; gap:8px;
+  position:relative; overflow:hidden;
+  transition:border-color .2s;
+}
+.amen-card.included { border-color:rgba(201,168,76,.2); }
+.amen-card.not-included { opacity:.45; }
+.amen-card-icon {
+  width:36px; height:36px; border:1px solid var(--K3);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.amen-card.included .amen-card-icon { border-color:rgba(201,168,76,.3); }
+.amen-card-name {
+  font-size:.62rem; letter-spacing:.1em; color:var(--W1);
+}
+.amen-card-desc {
+  font-size:.52rem; letter-spacing:.08em; color:rgba(255,255,255,.25);
+  line-height:1.6;
+}
+.amen-card-status {
+  display:flex; align-items:center; gap:5px;
+  font-size:.45rem; letter-spacing:.2em; text-transform:uppercase;
+  margin-top:2px;
+}
+.amen-card.included .amen-card-status { color:rgba(201,168,76,.7); }
+.amen-card.not-included .amen-card-status { color:rgba(255,255,255,.2); }
+.status-dot {
+  width:5px; height:5px; border-radius:50%;
+}
+.amen-card.included .status-dot { background:var(--G); }
+.amen-card.not-included .status-dot { background:var(--K5); border:1px solid var(--K4); }
+
+/* ─ INTERIOR FEATURES ─ */
+.interior-list {
+  display:flex; flex-direction:column; gap:0; padding-bottom:24px;
+}
+.int-item {
+  display:flex; align-items:center; gap:14px;
+  padding:12px 0; border-bottom:1px solid var(--K3);
+}
+.int-item:last-child { border-bottom:none; }
+.int-num {
+  font-family:var(--FD); font-size:.75rem; color:rgba(201,168,76,.3);
+  width:24px; flex-shrink:0; text-align:center;
+}
+.int-icon {
+  width:32px; height:32px; border:1px solid var(--K3);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.int-info { flex:1; }
+.int-name { font-size:.67rem; color:var(--W1); margin-bottom:2px; }
+.int-desc { font-size:.52rem; color:rgba(255,255,255,.22); letter-spacing:.06em; }
+.int-check {
+  width:20px; height:20px; border-radius:50%;
+  background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.3);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+
+/* ─ CATEGORY COMPARISON ─ */
+.comparison-table {
+  border:1px solid var(--K3); margin-bottom:24px; overflow:hidden;
+}
+.comp-head {
+  display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr;
+  background:var(--K);
+}
+.comp-head-cell {
+  padding:10px 8px; text-align:center;
+  font-size:.45rem; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(255,255,255,.25); border-right:1px solid var(--K3);
+}
+.comp-head-cell:first-child { text-align:left; padding-left:14px; }
+.comp-head-cell:last-child { border-right:none; }
+.comp-head-cell.active { color:var(--G); background:rgba(201,168,76,.05); }
+.comp-row {
+  display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr;
+  border-top:1px solid var(--K3);
+}
+.comp-row:hover { background:var(--K2); }
+.comp-cell {
+  padding:10px 8px; text-align:center;
+  font-size:.52rem; color:rgba(255,255,255,.35);
+  border-right:1px solid var(--K3);
+  display:flex; align-items:center; justify-content:center;
+}
+.comp-cell:first-child {
+  text-align:left; justify-content:flex-start;
+  padding-left:14px; color:rgba(255,255,255,.5);
+}
+.comp-cell:last-child { border-right:none; }
+.comp-cell.active { color:var(--W1); background:rgba(201,168,76,.03); }
+.check-y { color:var(--G); font-size:.75rem; }
+.check-n { color:rgba(255,255,255,.15); font-size:.75rem; }
+.comp-cell .check-y.active-col,
+.comp-cell.active .check-y { color:var(--G1); }
+
+/* ─ BOOKING FOOTER ─ */
+.det-footer {
+  background:rgba(10,10,10,.97); backdrop-filter:blur(20px);
+  border-top:1px solid var(--K3);
+  padding:16px 24px 28px;
+  flex-shrink:0;
+}
+.det-footer-row {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:12px;
+}
+.det-footer-price {
+  font-family:var(--FD); font-size:1.6rem; font-weight:300; color:var(--G);
+}
+.det-footer-avail {
+  display:flex; align-items:center; gap:6px;
+  font-size:.52rem; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(255,255,255,.3);
+}
+.avail-dot {
+  width:6px; height:6px; border-radius:50%; background:#4CAF50;
+  box-shadow:0 0 8px rgba(76,175,80,.5);
+}
+.det-book-btn {
+  width:100%; background:var(--G); border:none;
+  padding:15px; font-family:var(--FB);
+  font-size:.62rem; letter-spacing:.35em; text-transform:uppercase;
+  color:var(--K); cursor:pointer; transition:opacity .2s;
+}
+.det-book-btn:hover { opacity:.88; }
+.det-book-btn:active { transform:scale(.99); }
+
+/* ─ BOTTOM NAV (list screen) ─ */
+.bottom-nav {
+  position:absolute; bottom:0; left:0; right:0; height:80px;
+  background:rgba(10,10,10,.96); backdrop-filter:blur(20px);
+  border-top:1px solid var(--K3);
+  display:flex; align-items:center; justify-content:space-around;
+  padding:0 10px; z-index:500;
+}
+.nav-item {
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  cursor:pointer; padding:10px 16px; transition:opacity .2s;
+}
+.nav-label {
+  font-size:.48rem; letter-spacing:.25em; text-transform:uppercase;
+  color:rgba(255,255,255,.25); transition:color .2s;
+}
+.nav-item.active .nav-label { color:var(--G); }
+
+/* ─ VEHICLE SELECTOR (carousel in detail) ─ */
+.car-selector {
+  display:flex; gap:8px; padding:0 24px 20px;
+  overflow-x:auto; scrollbar-width:none;
+}
+.car-selector::-webkit-scrollbar { display:none; }
+.car-thumb {
+  flex-shrink:0; width:90px;
+  background:var(--K2); border:1px solid var(--K3);
+  padding:10px 8px; text-align:center; cursor:pointer;
+  transition:border-color .2s;
+}
+.car-thumb.on { border-color:var(--G); background:rgba(201,168,76,.06); }
+.car-thumb-name {
+  font-size:.48rem; letter-spacing:.12em; text-transform:uppercase;
+  color:rgba(255,255,255,.4); margin-top:6px;
+}
+.car-thumb.on .car-thumb-name { color:var(--G); }
+
+/* ─ FLOATING SECTION TABS ─ */
+.det-tabs {
+  display:flex; padding:0 24px; gap:0;
+  border-bottom:1px solid var(--K3);
+  overflow-x:auto; scrollbar-width:none;
+  flex-shrink:0; background:var(--K1);
+}
+.det-tabs::-webkit-scrollbar { display:none; }
+.det-tab {
+  padding:12px 14px; flex-shrink:0;
+  font-size:.5rem; letter-spacing:.28em; text-transform:uppercase;
+  color:rgba(255,255,255,.25); cursor:pointer; white-space:nowrap;
+  border-bottom:2px solid transparent; transition:all .2s;
+}
+.det-tab.on { color:var(--G); border-bottom-color:var(--G); }
+
+/* Stagger animation */
+.vcard { animation:cardIn .4s ease both; }
+.vcard:nth-child(1) { animation-delay:.05s; }
+.vcard:nth-child(2) { animation-delay:.12s; }
+.vcard:nth-child(3) { animation-delay:.19s; }
+.vcard:nth-child(4) { animation-delay:.26s; }
+@keyframes cardIn {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ══════════════════════════════
+   VEHICLES DATA (rendered)
+══════════════════════════════ */
+
+/* Category color accents */
+.cat-suv .vcard-name { color:var(--W); }
+.cat-sedan .vcard-name { color:rgba(255,255,255,.85); }
+.cat-van .vcard-name { color:rgba(255,255,255,.85); }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ══════════════════════════════════════
+       SCREEN 1 · CATALOG LIST
+  ══════════════════════════════════════ -->
+  <div class="screen active" id="sc-list">
+    <!-- Header -->
+    <div class="cat-header">
+      <div class="cat-header-top">
+        <div class="back-row">
+          <div class="back-ico">
+            <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </div>
+          <span class="back-label">Reserva</span>
+        </div>
+        <div class="header-logo">AUT<span>U</span>M</div>
+        <div style="width:32px; height:32px; border:1px solid var(--K3); display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          <svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.5)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+      </div>
+      <div class="cat-title-block">
+        <div class="cat-eyebrow">Seleccionar vehículo</div>
+        <div class="cat-title">Nuestra <em>flota</em><br>de excelencia</div>
+      </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-bar">
+      <div class="ftab on">Todos</div>
+      <div class="ftab">Executive SUV</div>
+      <div class="ftab">Sedán Premium</div>
+      <div class="ftab">Van Ejecutiva</div>
+    </div>
+
+    <!-- List -->
+    <div class="cat-body">
+
+      <!-- ── CARD 1: Mercedes GLS 580 ── -->
+      <div class="vcard featured cat-suv" onclick="openDetail('gls')">
+        <div class="vcard-badge">Más solicitado</div>
+        <div class="vcard-visual">
+          <div class="vcard-visual-bg"></div>
+          <svg width="100%" height="90" viewBox="0 0 340 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- GLS Body -->
+            <rect x="10" y="36" width="320" height="42" rx="5" fill="rgba(201,168,76,.06)" stroke="#c9a84c" stroke-width="1.2"/>
+            <!-- Roof -->
+            <path d="M50 36 Q70 10 100 8 H230 Q270 8 290 36" fill="rgba(201,168,76,.05)" stroke="#c9a84c" stroke-width="1.2"/>
+            <!-- Windows -->
+            <rect x="68" y="12" width="52" height="22" rx="2" fill="rgba(201,168,76,.08)" stroke="rgba(201,168,76,.35)" stroke-width=".8"/>
+            <rect x="126" y="11" width="58" height="23" rx="2" fill="rgba(201,168,76,.08)" stroke="rgba(201,168,76,.35)" stroke-width=".8"/>
+            <rect x="190" y="13" width="46" height="21" rx="2" fill="rgba(201,168,76,.06)" stroke="rgba(201,168,76,.25)" stroke-width=".8"/>
+            <!-- Wheels -->
+            <circle cx="82" cy="78" r="16" fill="rgba(0,0,0,.5)" stroke="#c9a84c" stroke-width="1.4"/>
+            <circle cx="82" cy="78" r="8" fill="rgba(201,168,76,.15)" stroke="rgba(201,168,76,.5)" stroke-width=".8"/>
+            <circle cx="258" cy="78" r="16" fill="rgba(0,0,0,.5)" stroke="#c9a84c" stroke-width="1.4"/>
+            <circle cx="258" cy="78" r="8" fill="rgba(201,168,76,.15)" stroke="rgba(201,168,76,.5)" stroke-width=".8"/>
+            <!-- Front grille -->
+            <rect x="298" y="45" width="16" height="20" rx="2" fill="rgba(201,168,76,.1)" stroke="rgba(201,168,76,.4)" stroke-width=".8"/>
+            <!-- Headlights -->
+            <rect x="296" y="38" width="14" height="6" rx="1" fill="rgba(201,168,76,.2)" stroke="#c9a84c" stroke-width=".8"/>
+            <!-- Door lines -->
+            <line x1="162" y1="36" x2="162" y2="78" stroke="rgba(201,168,76,.15)" stroke-width=".7"/>
+            <line x1="62" y1="36" x2="62" y2="78" stroke="rgba(201,168,76,.15)" stroke-width=".7"/>
+            <line x1="244" y1="36" x2="244" y2="78" stroke="rgba(201,168,76,.1)" stroke-width=".7"/>
+            <!-- Shine line -->
+            <path d="M80 18 Q170 12 240 16" stroke="rgba(255,255,255,.06)" stroke-width="3"/>
+            <!-- Shadow -->
+            <ellipse cx="170" cy="88" rx="130" ry="4" fill="rgba(0,0,0,.3)"/>
+          </svg>
+          <div class="vcard-model-tag">Mercedes-Benz GLS 580 4MATIC</div>
+        </div>
+        <div class="vcard-info">
+          <div class="vcard-row1">
+            <div>
+              <div class="vcard-name">GLS 580 Executive</div>
+              <div class="vcard-cat">Executive SUV · 7 plazas</div>
+            </div>
+            <div class="vcard-price-block">
+              <span class="vcard-price-from">desde</span>
+              <div class="vcard-price"><span class="vcard-currency">$</span>890</div>
+            </div>
+          </div>
+        </div>
+        <div class="vcard-specs">
+          <div class="spec-pill">
+            <span class="spec-val">7</span>
+            <span class="spec-key">Plazas</span>
+          </div>
+          <div class="spec-pill">
+            <span class="spec-val">4</span>
+            <span class="spec-key">Maletas</span>
+          </div>
+          <div class="spec-pill">
+            <span class="spec-val">A/C</span>
+            <span class="spec-key">Dual</span>
+          </div>
+          <div class="spec-pill">
+            <span class="spec-val">★4.9</span>
+            <span class="spec-key">Rating</span>
+          </div>
+        </div>
+        <div class="vcard-amenities">
+          <div class="amen-tag gold">
+            <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M1 6l10.1 5.346a1 1 0 0 0 .998-.001L22 6"/><path d="M21 6.5V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6.5"/></svg>
+            WiFi
+          </div>
+          <div class="amen-tag gold">
+            <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+            USB·C
+          </div>
+          <div class="amen-tag gold">
+            <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Privacidad
+          </div>
+          <div class="amen-tag">Agua mineral</div>
+          <div class="amen-tag">Periódicos</div>
+          <div class="amen-tag">+4 más</div>
+        </div>
+        <div class="vcard-cta">
+          <button class="vcard-detail-btn" onclick="openDetail('gls')">
+            Ver detalles
+            <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <button class="vcard-select-btn">Seleccionar</button>
+        </div>
+      </div>
+
+      <!-- ── CARD 2: BMW X7 ── -->
+      <div class="vcard cat-suv" onclick="openDetail('bmw')">
+        <div class="vcard-visual">
+          <div class="vcard-visual-bg" style="background:radial-gradient(ellipse at 60% 50%, rgba(201,168,76,.03) 0%, transparent 70%);"></div>
+          <svg width="100%" height="90" viewBox="0 0 340 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="38" width="320" height="40" rx="4" fill="rgba(201,168,76,.04)" stroke="rgba(201,168,76,.5)" stroke-width="1.1"/>
+            <path d="M45 38 Q65 12 95 10 H235 Q272 10 295 38" fill="rgba(201,168,76,.04)" stroke="rgba(201,168,76,.5)" stroke-width="1.1"/>
+            <rect x="66" y="14" width="50" height="22" rx="2" fill="rgba(201,168,76,.06)" stroke="rgba(201,168,76,.3)" stroke-width=".7"/>
+            <rect x="122" y="13" width="56" height="23" rx="2" fill="rgba(201,168,76,.06)" stroke="rgba(201,168,76,.3)" stroke-width=".7"/>
+            <rect x="184" y="14" width="48" height="22" rx="2" fill="rgba(201,168,76,.04)" stroke="rgba(201,168,76,.2)" stroke-width=".7"/>
+            <circle cx="80" cy="78" r="15" fill="rgba(0,0,0,.5)" stroke="rgba(201,168,76,.5)" stroke-width="1.2"/>
+            <circle cx="80" cy="78" r="7" fill="rgba(201,168,76,.1)" stroke="rgba(201,168,76,.4)" stroke-width=".8"/>
+            <circle cx="260" cy="78" r="15" fill="rgba(0,0,0,.5)" stroke="rgba(201,168,76,.5)" stroke-width="1.2"/>
+            <circle cx="260" cy="78" r="7" fill="rgba(201,168,76,.1)" stroke="rgba(201,168,76,.4)" stroke-width=".8"/>
+            <rect x="300" y="44" width="14" height="22" rx="2" stroke="rgba(201,168,76,.35)" stroke-width=".8"/>
+            <rect x="296" y="40" width="14" height="5" rx="1" fill="rgba(201,168,76,.15)" stroke="rgba(201,168,76,.4)" stroke-width=".7"/>
+            <line x1="160" y1="38" x2="160" y2="78" stroke="rgba(201,168,76,.12)" stroke-width=".7"/>
+            <ellipse cx="170" cy="88" rx="125" ry="3.5" fill="rgba(0,0,0,.25)"/>
+          </svg>
+          <div class="vcard-model-tag">BMW X7 xDrive40i</div>
+        </div>
+        <div class="vcard-info">
+          <div class="vcard-row1">
+            <div>
+              <div class="vcard-name">BMW X7 Premium</div>
+              <div class="vcard-cat">Executive SUV · 6 plazas</div>
+            </div>
+            <div class="vcard-price-block">
+              <span class="vcard-price-from">desde</span>
+              <div class="vcard-price" style="color:rgba(201,168,76,.8)"><span class="vcard-currency">$</span>780</div>
+            </div>
+          </div>
+        </div>
+        <div class="vcard-specs">
+          <div class="spec-pill"><span class="spec-val">6</span><span class="spec-key">Plazas</span></div>
+          <div class="spec-pill"><span class="spec-val">3</span><span class="spec-key">Maletas</span></div>
+          <div class="spec-pill"><span class="spec-val">A/C</span><span class="spec-key">Tri-zona</span></div>
+          <div class="spec-pill"><span class="spec-val">★4.8</span><span class="spec-key">Rating</span></div>
+        </div>
+        <div class="vcard-amenities">
+          <div class="amen-tag gold">WiFi</div>
+          <div class="amen-tag gold">USB·C</div>
+          <div class="amen-tag">Agua mineral</div>
+          <div class="amen-tag">+3 más</div>
+        </div>
+        <div class="vcard-cta">
+          <button class="vcard-detail-btn" onclick="openDetail('bmw')">Ver detalles <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          <button class="vcard-select-btn">Seleccionar</button>
+        </div>
+      </div>
+
+      <!-- ── CARD 3: Mercedes S-Class ── -->
+      <div class="vcard cat-sedan" onclick="openDetail('sclass')">
+        <div class="vcard-visual">
+          <div class="vcard-visual-bg"></div>
+          <svg width="100%" height="85" viewBox="0 0 340 85" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Sedan body — lower roofline -->
+            <rect x="8" y="42" width="324" height="34" rx="3" fill="rgba(201,168,76,.04)" stroke="rgba(201,168,76,.45)" stroke-width="1"/>
+            <path d="M40 42 Q60 20 90 17 H245 Q278 17 300 42" fill="rgba(201,168,76,.04)" stroke="rgba(201,168,76,.45)" stroke-width="1"/>
+            <rect x="72" y="20" width="54" height="20" rx="2" fill="rgba(201,168,76,.06)" stroke="rgba(201,168,76,.3)" stroke-width=".8"/>
+            <rect x="132" y="19" width="62" height="21" rx="2" fill="rgba(201,168,76,.06)" stroke="rgba(201,168,76,.3)" stroke-width=".8"/>
+            <rect x="200" y="21" width="44" height="19" rx="2" fill="rgba(201,168,76,.04)" stroke="rgba(201,168,76,.2)" stroke-width=".8"/>
+            <circle cx="78" cy="76" r="13" fill="rgba(0,0,0,.5)" stroke="rgba(201,168,76,.45)" stroke-width="1.2"/>
+            <circle cx="78" cy="76" r="6" stroke="rgba(201,168,76,.4)" stroke-width=".7"/>
+            <circle cx="262" cy="76" r="13" fill="rgba(0,0,0,.5)" stroke="rgba(201,168,76,.45)" stroke-width="1.2"/>
+            <circle cx="262" cy="76" r="6" stroke="rgba(201,168,76,.4)" stroke-width=".7"/>
+            <rect x="302" y="46" width="14" height="18" rx="2" stroke="rgba(201,168,76,.3)" stroke-width=".8"/>
+            <line x1="162" y1="42" x2="162" y2="76" stroke="rgba(201,168,76,.12)" stroke-width=".7"/>
+            <ellipse cx="170" cy="84" rx="120" ry="3" fill="rgba(0,0,0,.2)"/>
+          </svg>
+          <div class="vcard-model-tag">Mercedes-Benz S 580 L</div>
+        </div>
+        <div class="vcard-info">
+          <div class="vcard-row1">
+            <div>
+              <div class="vcard-name">S-Class Prestige</div>
+              <div class="vcard-cat">Sedán Premium · 4 plazas</div>
+            </div>
+            <div class="vcard-price-block">
+              <span class="vcard-price-from">desde</span>
+              <div class="vcard-price" style="color:rgba(201,168,76,.8)"><span class="vcard-currency">$</span>650</div>
+            </div>
+          </div>
+        </div>
+        <div class="vcard-specs">
+          <div class="spec-pill"><span class="spec-val">4</span><span class="spec-key">Plazas</span></div>
+          <div class="spec-pill"><span class="spec-val">2</span><span class="spec-key">Maletas</span></div>
+          <div class="spec-pill"><span class="spec-val">A/C</span><span class="spec-key">4-zona</span></div>
+          <div class="spec-pill"><span class="spec-val">★5.0</span><span class="spec-key">Rating</span></div>
+        </div>
+        <div class="vcard-amenities">
+          <div class="amen-tag gold">WiFi 5G</div>
+          <div class="amen-tag gold">Masaje</div>
+          <div class="amen-tag gold">Pantallas</div>
+          <div class="amen-tag">Champán</div>
+          <div class="amen-tag">+5 más</div>
+        </div>
+        <div class="vcard-cta">
+          <button class="vcard-detail-btn" onclick="openDetail('sclass')">Ver detalles <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          <button class="vcard-select-btn">Seleccionar</button>
+        </div>
+      </div>
+
+      <!-- ── CARD 4: Mercedes V-Class ── -->
+      <div class="vcard cat-van" onclick="openDetail('vclass')">
+        <div class="vcard-badge new">Corporativo</div>
+        <div class="vcard-visual">
+          <div class="vcard-visual-bg"></div>
+          <svg width="100%" height="90" viewBox="0 0 340 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Van body — taller -->
+            <rect x="8" y="28" width="322" height="50" rx="4" fill="rgba(201,168,76,.04)" stroke="rgba(201,168,76,.4)" stroke-width="1"/>
+            <!-- Roof almost flat -->
+            <path d="M28 28 Q30 14 50 12 H290 Q312 12 314 28" fill="rgba(201,168,76,.04)" stroke="rgba(201,168,76,.4)" stroke-width="1"/>
+            <!-- Multiple windows -->
+            <rect x="60" y="16" width="40" height="10" rx="1.5" fill="rgba(201,168,76,.06)" stroke="rgba(201,168,76,.3)" stroke-width=".7"/>
+            <rect x="106" y="16" width="40" height="10" rx="1.5" fill="rgba(201,168,76,.06)" stroke="rgba(201,168,76,.3)" stroke-width=".7"/>
+            <rect x="152" y="16" width="40" height="10" rx="1.5" fill="rgba(201,168,76,.06)" stroke="rgba(201,168,76,.3)" stroke-width=".7"/>
+            <rect x="198" y="16" width="40" height="10" rx="1.5" fill="rgba(201,168,76,.04)" stroke="rgba(201,168,76,.2)" stroke-width=".7"/>
+            <rect x="244" y="16" width="38" height="10" rx="1.5" fill="rgba(201,168,76,.04)" stroke="rgba(201,168,76,.2)" stroke-width=".7"/>
+            <!-- Side door line -->
+            <line x1="58" y1="28" x2="58" y2="78" stroke="rgba(201,168,76,.12)" stroke-width=".7"/>
+            <line x1="148" y1="28" x2="148" y2="78" stroke="rgba(201,168,76,.12)" stroke-width=".7"/>
+            <line x1="242" y1="28" x2="242" y2="78" stroke="rgba(201,168,76,.1)" stroke-width=".7"/>
+            <!-- Wheels -->
+            <circle cx="76" cy="78" r="14" fill="rgba(0,0,0,.5)" stroke="rgba(201,168,76,.4)" stroke-width="1.2"/>
+            <circle cx="76" cy="78" r="6" stroke="rgba(201,168,76,.35)" stroke-width=".8"/>
+            <circle cx="264" cy="78" r="14" fill="rgba(0,0,0,.5)" stroke="rgba(201,168,76,.4)" stroke-width="1.2"/>
+            <circle cx="264" cy="78" r="6" stroke="rgba(201,168,76,.35)" stroke-width=".8"/>
+            <!-- Front -->
+            <rect x="302" y="34" width="12" height="28" rx="2" stroke="rgba(201,168,76,.3)" stroke-width=".8"/>
+            <ellipse cx="170" cy="88" rx="130" ry="3.5" fill="rgba(0,0,0,.25)"/>
+          </svg>
+          <div class="vcard-model-tag">Mercedes-Benz V 300 d EXTRA LARGO</div>
+        </div>
+        <div class="vcard-info">
+          <div class="vcard-row1">
+            <div>
+              <div class="vcard-name">V-Class Corporativa</div>
+              <div class="vcard-cat">Van Ejecutiva · hasta 6 plazas</div>
+            </div>
+            <div class="vcard-price-block">
+              <span class="vcard-price-from">desde</span>
+              <div class="vcard-price" style="color:rgba(201,168,76,.8)"><span class="vcard-currency">$</span>1,200</div>
+            </div>
+          </div>
+        </div>
+        <div class="vcard-specs">
+          <div class="spec-pill"><span class="spec-val">6</span><span class="spec-key">Plazas</span></div>
+          <div class="spec-pill"><span class="spec-val">6</span><span class="spec-key">Maletas</span></div>
+          <div class="spec-pill"><span class="spec-val">A/C</span><span class="spec-key">Multi</span></div>
+          <div class="spec-pill"><span class="spec-val">★4.9</span><span class="spec-key">Rating</span></div>
+        </div>
+        <div class="vcard-amenities">
+          <div class="amen-tag gold">WiFi</div>
+          <div class="amen-tag gold">Mesa trabajo</div>
+          <div class="amen-tag gold">Pantallas</div>
+          <div class="amen-tag">Cargadores</div>
+          <div class="amen-tag">+3 más</div>
+        </div>
+        <div class="vcard-cta">
+          <button class="vcard-detail-btn" onclick="openDetail('vclass')">Ver detalles <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          <button class="vcard-select-btn">Seleccionar</button>
+        </div>
+      </div>
+
+    </div><!-- /cat-body -->
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="nav-item">
+        <div><svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+        <div class="nav-label">Inicio</div>
+      </div>
+      <div class="nav-item active">
+        <div><svg width="20" height="20" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <div class="nav-label" style="color:var(--G)">Vehículos</div>
+      </div>
+      <div class="nav-item">
+        <div><svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div>
+        <div class="nav-label">Rastrear</div>
+      </div>
+      <div class="nav-item">
+        <div><svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="nav-label">Perfil</div>
+      </div>
+    </div>
+  </div><!-- /sc-list -->
+
+
+  <!-- ══════════════════════════════════════
+       SCREEN 2 · VEHICLE DETAIL
+  ══════════════════════════════════════ -->
+  <div class="screen" id="sc-detail">
+    <div class="det-scroll">
+      <!-- Hero -->
+      <div class="det-hero">
+        <div class="det-hero-bg"></div>
+        <div class="det-hero-nav">
+          <div class="det-back" onclick="goBack()">
+            <div class="det-back-ico">
+              <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            </div>
+            <span class="det-back-lbl">Flota</span>
+          </div>
+          <div style="font-family:var(--FD); font-size:.9rem; letter-spacing:.4em; color:var(--W);">AUT<span style="color:var(--G)">U</span>M</div>
+          <div class="det-share">
+            <svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.5)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </div>
+        </div>
+
+        <!-- Tier badge -->
+        <div class="det-tier">
+          <svg class="det-tier-ico" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="20,3 36,20 20,37 4,20" stroke="#c9a84c" stroke-width="1"/>
+            <text x="20" y="25" text-anchor="middle" font-family="'Playfair Display',serif" font-size="12" fill="#c9a84c">A</text>
+          </svg>
+          <div class="det-tier-divider"></div>
+          <span class="det-tier-name">Executive Collection</span>
+        </div>
+
+        <!-- Car SVG stage -->
+        <div class="det-car-stage">
+          <svg width="340" height="130" viewBox="0 0 340 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- GLS full detail -->
+            <!-- Ground shadow -->
+            <ellipse cx="170" cy="124" rx="140" ry="6" fill="rgba(0,0,0,.4)"/>
+            <!-- Body -->
+            <rect x="10" y="52" width="320" height="60" rx="6" fill="rgba(201,168,76,.07)" stroke="#c9a84c" stroke-width="1.4"/>
+            <!-- Roof -->
+            <path d="M46 52 Q68 12 100 9 H232 Q274 9 294 52" fill="rgba(201,168,76,.06)" stroke="#c9a84c" stroke-width="1.4"/>
+            <!-- Windows row 1 -->
+            <rect x="68" y="14" width="56" height="36" rx="3" fill="rgba(201,168,76,.1)" stroke="rgba(201,168,76,.4)" stroke-width="1"/>
+            <!-- Windows row 2 -->
+            <rect x="130" y="12" width="60" height="38" rx="3" fill="rgba(201,168,76,.1)" stroke="rgba(201,168,76,.4)" stroke-width="1"/>
+            <!-- Windows row 3 -->
+            <rect x="196" y="14" width="50" height="36" rx="3" fill="rgba(201,168,76,.08)" stroke="rgba(201,168,76,.3)" stroke-width=".9"/>
+            <!-- Window detail lines -->
+            <line x1="96" y1="14" x2="96" y2="50" stroke="rgba(201,168,76,.2)" stroke-width=".7"/>
+            <line x1="162" y1="12" x2="162" y2="50" stroke="rgba(201,168,76,.2)" stroke-width=".7"/>
+            <!-- Wheels -->
+            <circle cx="80" cy="112" r="20" fill="rgba(0,0,0,.6)" stroke="#c9a84c" stroke-width="1.6"/>
+            <circle cx="80" cy="112" r="11" fill="rgba(201,168,76,.12)" stroke="rgba(201,168,76,.6)" stroke-width="1"/>
+            <circle cx="80" cy="112" r="4" fill="rgba(201,168,76,.4)"/>
+            <!-- Wheel spokes -->
+            <line x1="80" y1="101" x2="80" y2="91" stroke="rgba(201,168,76,.4)" stroke-width=".8"/>
+            <line x1="80" y1="123" x2="80" y2="133" stroke="rgba(201,168,76,.4)" stroke-width=".8"/>
+            <line x1="69" y1="112" x2="59" y2="112" stroke="rgba(201,168,76,.4)" stroke-width=".8"/>
+            <line x1="91" y1="112" x2="101" y2="112" stroke="rgba(201,168,76,.4)" stroke-width=".8"/>
+            <circle cx="260" cy="112" r="20" fill="rgba(0,0,0,.6)" stroke="#c9a84c" stroke-width="1.6"/>
+            <circle cx="260" cy="112" r="11" fill="rgba(201,168,76,.12)" stroke="rgba(201,168,76,.6)" stroke-width="1"/>
+            <circle cx="260" cy="112" r="4" fill="rgba(201,168,76,.4)"/>
+            <line x1="260" y1="101" x2="260" y2="91" stroke="rgba(201,168,76,.4)" stroke-width=".8"/>
+            <line x1="260" y1="123" x2="260" y2="133" stroke="rgba(201,168,76,.4)" stroke-width=".8"/>
+            <line x1="249" y1="112" x2="239" y2="112" stroke="rgba(201,168,76,.4)" stroke-width=".8"/>
+            <line x1="271" y1="112" x2="281" y2="112" stroke="rgba(201,168,76,.4)" stroke-width=".8"/>
+            <!-- Front grille -->
+            <rect x="302" y="62" width="18" height="28" rx="3" fill="rgba(201,168,76,.1)" stroke="rgba(201,168,76,.5)" stroke-width="1"/>
+            <!-- Headlight DRL -->
+            <rect x="298" y="55" width="16" height="5" rx="1" fill="rgba(201,168,76,.25)" stroke="#c9a84c" stroke-width=".8"/>
+            <!-- Door lines -->
+            <line x1="168" y1="52" x2="168" y2="112" stroke="rgba(201,168,76,.18)" stroke-width=".8"/>
+            <line x1="62" y1="52" x2="62" y2="112" stroke="rgba(201,168,76,.18)" stroke-width=".8"/>
+            <line x1="248" y1="52" x2="248" y2="112" stroke="rgba(201,168,76,.12)" stroke-width=".8"/>
+            <!-- Body highlight -->
+            <path d="M80 22 Q170 14 250 20" stroke="rgba(255,255,255,.07)" stroke-width="4"/>
+            <!-- Star logo -->
+            <circle cx="20" cy="82" r="8" stroke="rgba(201,168,76,.4)" stroke-width=".8" fill="none"/>
+            <path d="M20 76 L20 88 M14 82 L26 82" stroke="rgba(201,168,76,.3)" stroke-width=".8"/>
+          </svg>
+        </div>
+
+        <!-- Car selector thumbnails -->
+        <div class="car-selector">
+          <div class="car-thumb on">
+            <svg width="70" height="28" viewBox="0 0 100 36" fill="none"><rect x="2" y="14" width="96" height="18" rx="3" stroke="#c9a84c" stroke-width="1"/><path d="M12 14L20 4H72L86 14" stroke="#c9a84c" stroke-width="1"/><circle cx="22" cy="31" r="4" fill="none" stroke="#c9a84c" stroke-width="1"/><circle cx="78" cy="31" r="4" fill="none" stroke="#c9a84c" stroke-width="1"/></svg>
+            <div class="car-thumb-name">GLS 580</div>
+          </div>
+          <div class="car-thumb">
+            <svg width="70" height="28" viewBox="0 0 100 36" fill="none"><rect x="2" y="14" width="96" height="18" rx="3" stroke="rgba(201,168,76,.4)" stroke-width="1"/><path d="M10 14L18 5H72L88 14" stroke="rgba(201,168,76,.4)" stroke-width="1"/><circle cx="20" cy="31" r="4" fill="none" stroke="rgba(201,168,76,.4)" stroke-width="1"/><circle cx="80" cy="31" r="4" fill="none" stroke="rgba(201,168,76,.4)" stroke-width="1"/></svg>
+            <div class="car-thumb-name">BMW X7</div>
+          </div>
+          <div class="car-thumb">
+            <svg width="70" height="28" viewBox="0 0 100 32" fill="none"><rect x="2" y="14" width="96" height="14" rx="2" stroke="rgba(201,168,76,.4)" stroke-width="1"/><path d="M8 14L16 5H72L88 14" stroke="rgba(201,168,76,.4)" stroke-width="1"/><circle cx="20" cy="28" r="4" fill="none" stroke="rgba(201,168,76,.4)" stroke-width="1"/><circle cx="80" cy="28" r="4" fill="none" stroke="rgba(201,168,76,.4)" stroke-width="1"/></svg>
+            <div class="car-thumb-name">S 580 L</div>
+          </div>
+          <div class="car-thumb">
+            <svg width="70" height="28" viewBox="0 0 100 40" fill="none"><rect x="2" y="12" width="96" height="24" rx="2" stroke="rgba(201,168,76,.4)" stroke-width="1"/><path d="M6 12L10 4H86L92 12" stroke="rgba(201,168,76,.4)" stroke-width="1"/><circle cx="20" cy="36" r="5" fill="none" stroke="rgba(201,168,76,.4)" stroke-width="1"/><circle cx="80" cy="36" r="5" fill="none" stroke="rgba(201,168,76,.4)" stroke-width="1"/></svg>
+            <div class="car-thumb-name">V-Class</div>
+          </div>
+        </div>
+
+        <!-- Dots -->
+        <div class="det-dots">
+          <div class="det-dot on"></div>
+          <div class="det-dot"></div>
+          <div class="det-dot"></div>
+          <div class="det-dot"></div>
+        </div>
+      </div>
+
+      <!-- Name + price -->
+      <div class="det-name-sec">
+        <div class="det-category">Executive SUV · Mercedes-Benz</div>
+        <div class="det-name">GLS 580 Executive</div>
+        <div class="det-subtitle">Presencia. Confort. Dominio.</div>
+        <div class="det-price-row">
+          <span class="det-price-from">desde</span>
+          <span class="det-price">$890</span>
+          <span class="det-price-unit">por traslado</span>
+        </div>
+        <!-- Stats -->
+        <div class="det-stats">
+          <div class="det-stat">
+            <span class="det-stat-val">7</span>
+            <span class="det-stat-key">Plazas</span>
+          </div>
+          <div class="det-stat">
+            <span class="det-stat-val">4</span>
+            <span class="det-stat-key">Maletas</span>
+          </div>
+          <div class="det-stat">
+            <span class="det-stat-val">4.9</span>
+            <span class="det-stat-key">Rating</span>
+          </div>
+          <div class="det-stat">
+            <span class="det-stat-val">4 min</span>
+            <span class="det-stat-key">ETA</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="det-tabs" id="det-tabs">
+        <div class="det-tab on" onclick="switchTab('comodidades')">Comodidades</div>
+        <div class="det-tab" onclick="switchTab('interior')">Interior</div>
+        <div class="det-tab" onclick="switchTab('comparar')">Comparar</div>
+      </div>
+
+      <!-- ── TAB: COMODIDADES ── -->
+      <div class="det-section" id="tab-comodidades">
+        <div class="det-section-label">Comodidades incluidas</div>
+        <div class="amenities-full">
+
+          <div class="amen-card included">
+            <div class="amen-card-icon">
+              <svg width="18" height="18" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="#c9a84c"/></svg>
+            </div>
+            <div class="amen-card-name">WiFi 5G Premium</div>
+            <div class="amen-card-desc">Conectividad sin límites, velocidad hasta 200 Mbps.</div>
+            <div class="amen-card-status"><div class="status-dot"></div>Incluido</div>
+          </div>
+
+          <div class="amen-card included">
+            <div class="amen-card-icon">
+              <svg width="18" height="18" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
+            </div>
+            <div class="amen-card-name">Cargador USB-C / Lightning</div>
+            <div class="amen-card-desc">4 puertos independientes. Carga rápida 65W.</div>
+            <div class="amen-card-status"><div class="status-dot"></div>Incluido</div>
+          </div>
+
+          <div class="amen-card included">
+            <div class="amen-card-icon">
+              <svg width="18" height="18" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="amen-card-name">Privacidad Total</div>
+            <div class="amen-card-desc">Cristales oscuros + separador conductor.</div>
+            <div class="amen-card-status"><div class="status-dot"></div>Incluido</div>
+          </div>
+
+          <div class="amen-card included">
+            <div class="amen-card-icon">
+              <svg width="18" height="18" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2z"/><path d="M12 12c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/></svg>
+            </div>
+            <div class="amen-card-name">Conductor Certificado</div>
+            <div class="amen-card-desc">Entrenamiento protocolo de lujo AUTUM.</div>
+            <div class="amen-card-status"><div class="status-dot"></div>Incluido</div>
+          </div>
+
+          <div class="amen-card included">
+            <div class="amen-card-icon">
+              <svg width="18" height="18" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+            </div>
+            <div class="amen-card-name">Agua Mineral Fiji</div>
+            <div class="amen-card-desc">2 botellas enfriadas por pasajero.</div>
+            <div class="amen-card-status"><div class="status-dot"></div>Incluido</div>
+          </div>
+
+          <div class="amen-card included">
+            <div class="amen-card-icon">
+              <svg width="18" height="18" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <div class="amen-card-name">Prensa de lujo</div>
+            <div class="amen-card-desc">El País, Financial Times, Reforma.</div>
+            <div class="amen-card-status"><div class="status-dot"></div>Incluido</div>
+          </div>
+
+          <div class="amen-card included">
+            <div class="amen-card-icon">
+              <svg width="18" height="18" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            </div>
+            <div class="amen-card-name">Ambiente sonoro</div>
+            <div class="amen-card-desc">Bose premium · selección personalizable.</div>
+            <div class="amen-card-status"><div class="status-dot"></div>Incluido</div>
+          </div>
+
+          <div class="amen-card included">
+            <div class="amen-card-icon">
+              <svg width="18" height="18" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
+            </div>
+            <div class="amen-card-name">Climatización Dual</div>
+            <div class="amen-card-desc">Control independiente delante / trasero.</div>
+            <div class="amen-card-status"><div class="status-dot"></div>Incluido</div>
+          </div>
+
+          <div class="amen-card not-included">
+            <div class="amen-card-icon" style="border-color:var(--K4);">
+              <svg width="18" height="18" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="amen-card-name">Masaje en asiento</div>
+            <div class="amen-card-desc">Disponible en S-Class Prestige.</div>
+            <div class="amen-card-status"><div class="status-dot"></div>No disponible</div>
+          </div>
+
+          <div class="amen-card not-included">
+            <div class="amen-card-icon" style="border-color:var(--K4);">
+              <svg width="18" height="18" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+            </div>
+            <div class="amen-card-name">Mesa de trabajo</div>
+            <div class="amen-card-desc">Disponible en V-Class Corporativa.</div>
+            <div class="amen-card-status"><div class="status-dot"></div>No disponible</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── TAB: INTERIOR ── -->
+      <div class="det-section" id="tab-interior" style="display:none;">
+        <div class="det-section-label">Equipamiento interior</div>
+        <div class="interior-list">
+          <div class="int-item">
+            <div class="int-num">01</div>
+            <div class="int-icon"><svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>
+            <div class="int-info">
+              <div class="int-name">Asientos Nappa en piel</div>
+              <div class="int-desc">Nappa Designo con costuras contrastantes en dorado</div>
+            </div>
+            <div class="int-check"><svg width="8" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div>
+          </div>
+          <div class="int-item">
+            <div class="int-num">02</div>
+            <div class="int-icon"><svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div>
+            <div class="int-info">
+              <div class="int-name">Sistema MBUX Hyperscreen</div>
+              <div class="int-desc">Pantalla panorámica 56" · Android Auto · Apple CarPlay</div>
+            </div>
+            <div class="int-check"><svg width="8" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div>
+          </div>
+          <div class="int-item">
+            <div class="int-num">03</div>
+            <div class="int-icon"><svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+            <div class="int-info">
+              <div class="int-name">Sonido Burmester 3D</div>
+              <div class="int-desc">27 altavoces · 1590 W · Sonido envolvente</div>
+            </div>
+            <div class="int-check"><svg width="8" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div>
+          </div>
+          <div class="int-item">
+            <div class="int-num">04</div>
+            <div class="int-icon"><svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
+            <div class="int-info">
+              <div class="int-name">Iluminación ambiental</div>
+              <div class="int-desc">64 colores · brillo ajustable</div>
+            </div>
+            <div class="int-check"><svg width="8" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div>
+          </div>
+          <div class="int-item">
+            <div class="int-num">05</div>
+            <div class="int-icon"><svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+            <div class="int-info">
+              <div class="int-name">Soporte de tablet integrado</div>
+              <div class="int-desc">Soporte magnético trasero + carga inalámbrica Qi</div>
+            </div>
+            <div class="int-check"><svg width="8" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div>
+          </div>
+          <div class="int-item">
+            <div class="int-num">06</div>
+            <div class="int-icon"><svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+            <div class="int-info">
+              <div class="int-name">Techo panorámico</div>
+              <div class="int-desc">Magic Sky Control · eléctrico · anti-UV</div>
+            </div>
+            <div class="int-check"><svg width="8" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div>
+          </div>
+          <div class="int-item">
+            <div class="int-num">07</div>
+            <div class="int-icon"><svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+            <div class="int-info">
+              <div class="int-name">Perfumador de cabina</div>
+              <div class="int-desc">Sistema ENERGIZING de Mercedes · 5 fragancias</div>
+            </div>
+            <div class="int-check"><svg width="8" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div>
+          </div>
+          <div class="int-item">
+            <div class="int-num">08</div>
+            <div class="int-icon"><svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg></div>
+            <div class="int-info">
+              <div class="int-name">Compartimento refrigerado</div>
+              <div class="int-desc">Nevera 6L integrada en consola trasera</div>
+            </div>
+            <div class="int-check"><svg width="8" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB: COMPARAR ── -->
+      <div class="det-section" id="tab-comparar" style="display:none;">
+        <div class="det-section-label">Comparar flota</div>
+        <div class="comparison-table">
+          <div class="comp-head">
+            <div class="comp-head-cell">Característica</div>
+            <div class="comp-head-cell active">GLS 580</div>
+            <div class="comp-head-cell">BMW X7</div>
+            <div class="comp-head-cell">S-Class</div>
+          </div>
+          <div class="comp-row">
+            <div class="comp-cell">Plazas</div>
+            <div class="comp-cell active"><span class="check-y">7</span></div>
+            <div class="comp-cell">6</div>
+            <div class="comp-cell">4</div>
+          </div>
+          <div class="comp-row">
+            <div class="comp-cell">WiFi 5G</div>
+            <div class="comp-cell active"><span class="check-y">✓</span></div>
+            <div class="comp-cell"><span class="check-y">✓</span></div>
+            <div class="comp-cell"><span class="check-y">✓</span></div>
+          </div>
+          <div class="comp-row">
+            <div class="comp-cell">USB-C x4</div>
+            <div class="comp-cell active"><span class="check-y">✓</span></div>
+            <div class="comp-cell"><span class="check-y">✓</span></div>
+            <div class="comp-cell"><span class="check-y">✓</span></div>
+          </div>
+          <div class="comp-row">
+            <div class="comp-cell">Privacidad</div>
+            <div class="comp-cell active"><span class="check-y">✓</span></div>
+            <div class="comp-cell"><span class="check-n">–</span></div>
+            <div class="comp-cell"><span class="check-y">✓</span></div>
+          </div>
+          <div class="comp-row">
+            <div class="comp-cell">Masaje</div>
+            <div class="comp-cell active"><span class="check-n">–</span></div>
+            <div class="comp-cell"><span class="check-n">–</span></div>
+            <div class="comp-cell"><span class="check-y">✓</span></div>
+          </div>
+          <div class="comp-row">
+            <div class="comp-cell">Mesa trabajo</div>
+            <div class="comp-cell active"><span class="check-n">–</span></div>
+            <div class="comp-cell"><span class="check-n">–</span></div>
+            <div class="comp-cell"><span class="check-n">–</span></div>
+          </div>
+          <div class="comp-row">
+            <div class="comp-cell">Refrigerador</div>
+            <div class="comp-cell active"><span class="check-y">✓</span></div>
+            <div class="comp-cell"><span class="check-n">–</span></div>
+            <div class="comp-cell"><span class="check-y">✓</span></div>
+          </div>
+          <div class="comp-row">
+            <div class="comp-cell">Techo panorámico</div>
+            <div class="comp-cell active"><span class="check-y">✓</span></div>
+            <div class="comp-cell"><span class="check-y">✓</span></div>
+            <div class="comp-cell"><span class="check-n">–</span></div>
+          </div>
+          <div class="comp-row">
+            <div class="comp-cell">Precio desde</div>
+            <div class="comp-cell active" style="color:var(--G); font-family:var(--FD);">$890</div>
+            <div class="comp-cell">$780</div>
+            <div class="comp-cell">$650</div>
+          </div>
+        </div>
+        <div style="height:16px;"></div>
+      </div>
+
+    </div><!-- /det-scroll -->
+
+    <!-- Footer CTA -->
+    <div class="det-footer">
+      <div class="det-footer-row">
+        <div class="det-footer-price">$890</div>
+        <div class="det-footer-avail">
+          <div class="avail-dot"></div>
+          4 unidades disponibles
+        </div>
+      </div>
+      <button class="det-book-btn">Reservar este vehículo</button>
+    </div>
+
+  </div><!-- /sc-detail -->
+
+</div><!-- /phone -->
+
+<div style="position:fixed; bottom:24px; left:50%; transform:translateX(-50%); font-size:.5rem; letter-spacing:.3em; text-transform:uppercase; color:rgba(201,168,76,.2); pointer-events:none;">
+  AUTUM · Toca "Ver detalles" para explorar
+</div>
+
+<script>
+function openDetail(id) {
+  document.getElementById('sc-list').classList.remove('active');
+  document.getElementById('sc-detail').classList.add('active');
+  // Scroll to top
+  document.querySelector('.det-scroll').scrollTop = 0;
+  // Reset tabs
+  switchTab('comodidades');
+}
+
+function goBack() {
+  document.getElementById('sc-detail').classList.remove('active');
+  document.getElementById('sc-list').classList.add('active');
+}
+
+function switchTab(tab) {
+  // Deactivate all tabs & hide all tab content
+  document.querySelectorAll('.det-tab').forEach(t => t.classList.remove('on'));
+  ['comodidades','interior','comparar'].forEach(id => {
+    const el = document.getElementById('tab-'+id);
+    if(el) el.style.display = 'none';
+  });
+  // Activate selected
+  const tabs = document.querySelectorAll('.det-tab');
+  const idx = ['comodidades','interior','comparar'].indexOf(tab);
+  if(tabs[idx]) tabs[idx].classList.add('on');
+  const target = document.getElementById('tab-'+tab);
+  if(target) target.style.display = 'block';
+}
+
+// Filter tabs
+document.querySelectorAll('.ftab').forEach(t => {
+  t.addEventListener('click', function() {
+    document.querySelectorAll('.ftab').forEach(x => x.classList.remove('on'));
+    this.classList.add('on');
+  });
+});
+
+// Car thumbs in detail
+document.querySelectorAll('.car-thumb').forEach((t,i) => {
+  t.addEventListener('click', function() {
+    document.querySelectorAll('.car-thumb').forEach(x => x.classList.remove('on'));
+    this.classList.add('on');
+    document.querySelectorAll('.det-dot').forEach(x => x.classList.remove('on'));
+    document.querySelectorAll('.det-dot')[i]?.classList.add('on');
+  });
+});
+</script>
+</body>
+</html>

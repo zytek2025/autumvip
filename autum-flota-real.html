@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AUTUM — Flota Real</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Raleway:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --K:#000; --K1:#0a0a0a; --K2:#111; --K3:#1a1a1a; --K4:#252525;
+  --W:#fff; --W1:#f8f4ee;
+  --G:#c9a84c; --G1:#e8c96a; --G2:#a8832a;
+  --Go:rgba(201,168,76,.1); --Gb:rgba(201,168,76,.25);
+  --FD:'Playfair Display',serif;
+  --FB:'Raleway',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body {
+  background:#060606;
+  font-family:var(--FB); font-weight:300;
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh;
+}
+
+/* ── PHONE ── */
+.phone {
+  width:390px; height:844px;
+  background:var(--K1);
+  border-radius:48px; overflow:hidden; position:relative;
+  box-shadow: 0 0 0 1px rgba(201,168,76,.18), 0 0 0 2px #000, 0 60px 140px rgba(0,0,0,.95);
+}
+.notch {
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:120px; height:34px; background:var(--K);
+  border-radius:0 0 22px 22px; z-index:1000;
+}
+
+/* ── SCREENS ── */
+.screen {
+  position:absolute; inset:0;
+  opacity:0; pointer-events:none;
+  transition:opacity .35s ease;
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.screen.active { opacity:1; pointer-events:all; }
+
+/* ══════════════════
+   CATALOG LIST
+══════════════════ */
+#s-list { background:var(--K1); }
+
+.header {
+  padding:50px 22px 16px;
+  border-bottom:1px solid var(--K3);
+  flex-shrink:0;
+}
+.header-row {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:14px;
+}
+.logo { font-family:var(--FD); font-size:1rem; letter-spacing:.4em; color:var(--W); }
+.logo span { color:var(--G); }
+.eyebrow { font-size:.52rem; letter-spacing:.42em; text-transform:uppercase; color:var(--G); margin-bottom:6px; }
+.h-title { font-family:var(--FD); font-size:1.6rem; font-weight:300; color:var(--W); }
+.h-title em { font-style:italic; color:var(--G); }
+
+/* filter tabs */
+.filters {
+  display:flex; gap:0; overflow-x:auto; scrollbar-width:none;
+  border-bottom:1px solid var(--K3); flex-shrink:0;
+}
+.filters::-webkit-scrollbar{display:none;}
+.ftab {
+  padding:11px 16px; flex-shrink:0;
+  font-size:.5rem; letter-spacing:.28em; text-transform:uppercase;
+  color:rgba(255,255,255,.25); cursor:pointer;
+  border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap;
+}
+.ftab.on { color:var(--G); border-bottom-color:var(--G); }
+
+.list-body {
+  flex:1; overflow-y:auto; padding:16px 16px 100px; scrollbar-width:none;
+}
+.list-body::-webkit-scrollbar{display:none;}
+
+/* ── VEHICLE CARD ── */
+.vcard {
+  background:var(--K2); border:1px solid var(--K3);
+  margin-bottom:12px; cursor:pointer;
+  transition:border-color .3s;
+  position:relative; overflow:hidden;
+  animation:cardIn .4s ease both;
+}
+.vcard:nth-child(1){animation-delay:.05s;}
+.vcard:nth-child(2){animation-delay:.12s;}
+.vcard:nth-child(3){animation-delay:.18s;}
+.vcard:nth-child(4){animation-delay:.24s;}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+.vcard::before {
+  content:''; position:absolute;
+  left:0; top:0; bottom:0; width:2px;
+  background:var(--G); transform:scaleY(0);
+  transition:transform .3s; transform-origin:bottom;
+}
+.vcard:hover{border-color:var(--Gb);}
+.vcard:hover::before{transform:scaleY(1);}
+.vcard.featured{border-color:rgba(201,168,76,.35);}
+.vcard.featured::before{transform:scaleY(1);}
+
+/* Photo area */
+.vcard-photo {
+  position:relative; height:180px; overflow:hidden;
+  background:var(--K);
+}
+.vcard-photo img {
+  width:100%; height:100%;
+  object-fit:cover; object-position:center 60%;
+  transition:transform .5s ease;
+  filter:brightness(.85) contrast(1.05) saturate(.9);
+}
+.vcard:hover .vcard-photo img { transform:scale(1.03); }
+
+/* gradient overlay on photo */
+.vcard-photo::after {
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(to bottom, transparent 40%, rgba(0,0,0,.7) 100%);
+}
+.vcard-photo-label {
+  position:absolute; bottom:10px; left:14px; z-index:2;
+  font-size:.45rem; letter-spacing:.25em; text-transform:uppercase;
+  color:rgba(201,168,76,.7);
+}
+.vcard-badge {
+  position:absolute; top:10px; right:10px; z-index:2;
+  font-size:.42rem; letter-spacing:.25em; text-transform:uppercase;
+  color:var(--K); background:var(--G); padding:4px 8px;
+}
+.vcard-badge.alt { background:var(--W1); }
+
+/* fallback skeleton when img fails */
+.vcard-photo.loading img { opacity:0; }
+.vcard-photo .skeleton {
+  position:absolute; inset:0;
+  background:linear-gradient(90deg, var(--K3) 25%, var(--K4) 50%, var(--K3) 75%);
+  background-size:200% 100%;
+  animation:skeleton 1.5s infinite;
+}
+@keyframes skeleton{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* Info */
+.vcard-info {
+  padding:14px 16px 0;
+  display:flex; align-items:flex-start; justify-content:space-between;
+}
+.vcard-name { font-family:var(--FD); font-size:.95rem; color:var(--W); margin-bottom:3px; }
+.vcard-sub { font-size:.5rem; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.25); }
+.vcard-price { text-align:right; }
+.vcard-from { font-size:.44rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.2); display:block; }
+.vcard-amt { font-family:var(--FD); font-size:1.15rem; color:var(--G); }
+
+/* Specs strip */
+.vcard-specs {
+  display:flex; border-top:1px solid var(--K3); margin-top:12px;
+}
+.spec {
+  flex:1; padding:8px 4px; text-align:center;
+  border-right:1px solid var(--K3);
+  display:flex; flex-direction:column; gap:2px;
+}
+.spec:last-child{border-right:none;}
+.spec-v { font-family:var(--FD); font-size:.78rem; color:var(--W1); }
+.spec-k { font-size:.42rem; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.2); }
+
+/* Amenity tags */
+.vcard-amen {
+  padding:10px 16px 0;
+  display:flex; flex-wrap:wrap; gap:5px;
+}
+.atag {
+  display:flex; align-items:center; gap:4px;
+  background:var(--K3); border:1px solid var(--K4);
+  padding:4px 8px;
+  font-size:.46rem; letter-spacing:.12em; text-transform:uppercase;
+  color:rgba(255,255,255,.35);
+}
+.atag.g {
+  background:rgba(201,168,76,.08);
+  border-color:rgba(201,168,76,.2);
+  color:rgba(201,168,76,.65);
+}
+
+/* CTA row */
+.vcard-cta {
+  padding:10px 16px 14px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.btn-detail {
+  font-size:.5rem; letter-spacing:.25em; text-transform:uppercase;
+  color:var(--G); background:none; border:none; cursor:pointer;
+  display:flex; align-items:center; gap:5px;
+}
+.btn-select {
+  font-size:.5rem; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--K); background:var(--G); border:none;
+  padding:9px 16px; cursor:pointer; transition:opacity .2s;
+}
+.btn-select:hover{opacity:.88;}
+
+/* ══════════════════
+   VEHICLE DETAIL
+══════════════════ */
+#s-detail { background:var(--K); }
+
+.det-scroll { flex:1; overflow-y:auto; scrollbar-width:none; }
+.det-scroll::-webkit-scrollbar{display:none;}
+
+/* Hero photo */
+.det-hero-photo {
+  position:relative; height:260px; overflow:hidden; background:var(--K2);
+}
+.det-hero-photo img {
+  width:100%; height:100%;
+  object-fit:cover; object-position:center 55%;
+  filter:brightness(.8) contrast(1.1) saturate(.85);
+}
+.det-hero-photo::after {
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgba(0,0,0,.5) 0%, transparent 40%, rgba(0,0,0,.8) 100%);
+}
+/* back button over photo */
+.det-nav {
+  position:absolute; top:44px; left:0; right:0; z-index:10;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 20px;
+}
+.det-back {
+  display:flex; align-items:center; gap:8px; cursor:pointer;
+  background:rgba(0,0,0,.5); backdrop-filter:blur(8px);
+  border:1px solid rgba(201,168,76,.2); padding:8px 12px;
+}
+.det-back-lbl { font-size:.5rem; letter-spacing:.3em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+.det-logo { font-family:var(--FD); font-size:.9rem; letter-spacing:.4em; color:var(--W); text-shadow:0 2px 8px rgba(0,0,0,.8); }
+.det-logo span { color:var(--G); }
+
+/* Photo watermark */
+.photo-credit {
+  position:absolute; bottom:10px; right:12px; z-index:5;
+  font-size:.42rem; letter-spacing:.1em;
+  color:rgba(255,255,255,.3);
+}
+
+/* Thumbnail row */
+.det-thumbs {
+  display:flex; gap:6px; padding:12px 20px;
+  background:var(--K1); border-bottom:1px solid var(--K3);
+  overflow-x:auto; scrollbar-width:none;
+}
+.det-thumbs::-webkit-scrollbar{display:none;}
+.det-thumb {
+  width:70px; height:50px; flex-shrink:0;
+  overflow:hidden; cursor:pointer;
+  border:1px solid var(--K3); transition:border-color .2s;
+}
+.det-thumb.on { border-color:var(--G); }
+.det-thumb img {
+  width:100%; height:100%;
+  object-fit:cover; object-position:center;
+  filter:brightness(.7);
+  transition:filter .2s;
+}
+.det-thumb.on img, .det-thumb:hover img { filter:brightness(.9); }
+
+/* Name block */
+.det-name-block {
+  padding:20px 20px 0;
+  background:var(--K1);
+}
+.det-cat { font-size:.5rem; letter-spacing:.42em; text-transform:uppercase; color:var(--G); margin-bottom:6px; }
+.det-name { font-family:var(--FD); font-size:1.8rem; font-weight:300; color:var(--W); margin-bottom:4px; }
+.det-model { font-size:.6rem; letter-spacing:.15em; color:rgba(255,255,255,.25); text-transform:uppercase; margin-bottom:16px; }
+
+.det-price-row { display:flex; align-items:baseline; gap:8px; margin-bottom:16px; }
+.det-from { font-size:.5rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.25); }
+.det-price { font-family:var(--FD); font-size:2.2rem; font-weight:300; color:var(--G); }
+.det-unit { font-size:.5rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.2); }
+
+/* Stats */
+.det-stats {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--K3); background:var(--K);
+}
+.dst {
+  padding:14px 8px; text-align:center;
+  border-right:1px solid var(--K3);
+  display:flex; flex-direction:column; gap:3px;
+}
+.dst:last-child{border-right:none;}
+.dst-v { font-family:var(--FD); font-size:1rem; color:var(--W1); }
+.dst-k { font-size:.4rem; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.2); }
+
+/* Tabs */
+.det-tabs {
+  display:flex; padding:0 20px;
+  border-bottom:1px solid var(--K3);
+  background:var(--K1); flex-shrink:0; overflow-x:auto; scrollbar-width:none;
+}
+.det-tabs::-webkit-scrollbar{display:none;}
+.dtab {
+  padding:12px 14px; flex-shrink:0;
+  font-size:.48rem; letter-spacing:.26em; text-transform:uppercase;
+  color:rgba(255,255,255,.25); cursor:pointer; white-space:nowrap;
+  border-bottom:2px solid transparent; transition:all .2s;
+}
+.dtab.on { color:var(--G); border-bottom-color:var(--G); }
+
+/* Tab content */
+.tab-pane { padding:18px 20px; display:none; }
+.tab-pane.on { display:block; }
+
+/* Amenities grid */
+.amen-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.ac {
+  background:var(--K2); border:1px solid var(--K3);
+  padding:14px 12px; transition:border-color .2s;
+}
+.ac.yes { border-color:rgba(201,168,76,.2); }
+.ac.no  { opacity:.4; }
+.ac-ico {
+  width:32px; height:32px; border:1px solid var(--K3);
+  display:flex; align-items:center; justify-content:center; margin-bottom:8px;
+}
+.ac.yes .ac-ico { border-color:rgba(201,168,76,.3); }
+.ac-name { font-size:.62rem; color:var(--W1); margin-bottom:3px; }
+.ac-desc { font-size:.5rem; color:rgba(255,255,255,.22); line-height:1.5; }
+.ac-status {
+  display:flex; align-items:center; gap:4px; margin-top:6px;
+  font-size:.44rem; letter-spacing:.18em; text-transform:uppercase;
+}
+.ac.yes .ac-status { color:rgba(201,168,76,.65); }
+.ac.no  .ac-status { color:rgba(255,255,255,.2); }
+.sdot { width:5px; height:5px; border-radius:50%; }
+.ac.yes .sdot { background:var(--G); }
+.ac.no  .sdot { background:var(--K4); border:1px solid var(--K4); }
+
+/* Interior list */
+.int-list { display:flex; flex-direction:column; }
+.int-item {
+  display:flex; align-items:center; gap:12px;
+  padding:11px 0; border-bottom:1px solid var(--K3);
+}
+.int-item:last-child{border-bottom:none;}
+.int-n { font-family:var(--FD); font-size:.7rem; color:rgba(201,168,76,.3); width:22px; flex-shrink:0; text-align:center; }
+.int-ico { width:30px; height:30px; border:1px solid var(--K3); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.int-name { font-size:.64rem; color:var(--W1); margin-bottom:2px; }
+.int-desc { font-size:.5rem; color:rgba(255,255,255,.2); }
+.int-ck { width:18px; height:18px; border-radius:50%; background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.3); display:flex; align-items:center; justify-content:center; margin-left:auto; flex-shrink:0; }
+
+/* Footer */
+.det-footer {
+  background:rgba(10,10,10,.97); backdrop-filter:blur(20px);
+  border-top:1px solid var(--K3);
+  padding:14px 20px 28px; flex-shrink:0;
+}
+.det-foot-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.det-foot-price { font-family:var(--FD); font-size:1.5rem; color:var(--G); }
+.avail { display:flex; align-items:center; gap:6px; font-size:.5rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.3); }
+.avail-dot { width:6px; height:6px; border-radius:50%; background:#4CAF50; box-shadow:0 0 8px rgba(76,175,80,.5); }
+.det-book {
+  width:100%; background:var(--G); border:none;
+  padding:14px; font-family:var(--FB);
+  font-size:.6rem; letter-spacing:.35em; text-transform:uppercase;
+  color:var(--K); cursor:pointer; transition:opacity .2s;
+}
+.det-book:hover{opacity:.88;}
+
+/* Bottom nav */
+.bottom-nav {
+  position:absolute; bottom:0; left:0; right:0; height:80px;
+  background:rgba(10,10,10,.97); backdrop-filter:blur(20px);
+  border-top:1px solid var(--K3);
+  display:flex; align-items:center; justify-content:space-around; z-index:500;
+}
+.ni { display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; padding:10px 16px; }
+.nl { font-size:.46rem; letter-spacing:.22em; text-transform:uppercase; color:rgba(255,255,255,.25); }
+.ni.on .nl { color:var(--G); }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ══ LIST ══ -->
+  <div class="screen active" id="s-list">
+    <div class="header">
+      <div class="header-row">
+        <div class="eyebrow" style="margin-bottom:0;">Seleccionar vehículo</div>
+        <div class="logo">AUT<span>U</span>M</div>
+        <div style="width:32px;height:32px;border:1px solid var(--K3);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+          <svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.5)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+      </div>
+      <div class="h-title">Nuestra <em>flota</em></div>
+    </div>
+
+    <div class="filters">
+      <div class="ftab on" onclick="filterTabs(this)">Todos</div>
+      <div class="ftab" onclick="filterTabs(this)">Executive SUV</div>
+      <div class="ftab" onclick="filterTabs(this)">Full-Size</div>
+      <div class="ftab" onclick="filterTabs(this)">Sedán</div>
+      <div class="ftab" onclick="filterTabs(this)">Van</div>
+    </div>
+
+    <div class="list-body">
+
+      <!-- ── TAHOE 2021 ── -->
+      <div class="vcard featured" onclick="openDetail(0)">
+        <div class="vcard-badge">Nuevo en flota</div>
+        <div class="vcard-photo" id="photo-0">
+          <div class="skeleton"></div>
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/2021_Chevrolet_Tahoe_High_Country%2C_front_12.24.20.jpg/800px-2021_Chevrolet_Tahoe_High_Country%2C_front_12.24.20.jpg"
+            alt="Chevrolet Tahoe 2021 High Country"
+            onload="imgLoaded(0)"
+            onerror="imgError(0)">
+          <div class="vcard-photo-label">Chevrolet Tahoe 2021 · High Country</div>
+        </div>
+        <div class="vcard-info">
+          <div>
+            <div class="vcard-name">Tahoe High Country</div>
+            <div class="vcard-sub">Full-Size Executive SUV · 8 plazas</div>
+          </div>
+          <div class="vcard-price">
+            <span class="vcard-from">desde</span>
+            <div class="vcard-amt">$920</div>
+          </div>
+        </div>
+        <div class="vcard-specs">
+          <div class="spec"><div class="spec-v">8</div><div class="spec-k">Plazas</div></div>
+          <div class="spec"><div class="spec-v">5</div><div class="spec-k">Maletas</div></div>
+          <div class="spec"><div class="spec-v">A/C</div><div class="spec-k">Tri-zona</div></div>
+          <div class="spec"><div class="spec-v">★4.9</div><div class="spec-k">Rating</div></div>
+        </div>
+        <div class="vcard-amen">
+          <div class="atag g">WiFi 5G</div>
+          <div class="atag g">USB-C x4</div>
+          <div class="atag g">Privacidad</div>
+          <div class="atag">Agua</div>
+          <div class="atag">+5 más</div>
+        </div>
+        <div class="vcard-cta">
+          <button class="btn-detail">Ver detalles <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          <button class="btn-select">Seleccionar</button>
+        </div>
+      </div>
+
+      <!-- ── TAHOE RST 2022 ── -->
+      <div class="vcard" onclick="openDetail(1)">
+        <div class="vcard-photo" id="photo-1">
+          <div class="skeleton"></div>
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2022_Chevrolet_Tahoe_RST%2C_front_3.7.22.jpg/800px-2022_Chevrolet_Tahoe_RST%2C_front_3.7.22.jpg"
+            alt="Chevrolet Tahoe RST 2022"
+            onload="imgLoaded(1)"
+            onerror="imgError(1)">
+          <div class="vcard-photo-label">Chevrolet Tahoe RST 2022 · Sport</div>
+        </div>
+        <div class="vcard-info">
+          <div>
+            <div class="vcard-name">Tahoe RST Sport</div>
+            <div class="vcard-sub">Full-Size Executive SUV · 7 plazas</div>
+          </div>
+          <div class="vcard-price">
+            <span class="vcard-from">desde</span>
+            <div class="vcard-amt" style="color:rgba(201,168,76,.8)">$850</div>
+          </div>
+        </div>
+        <div class="vcard-specs">
+          <div class="spec"><div class="spec-v">7</div><div class="spec-k">Plazas</div></div>
+          <div class="spec"><div class="spec-v">4</div><div class="spec-k">Maletas</div></div>
+          <div class="spec"><div class="spec-v">A/C</div><div class="spec-k">Dual</div></div>
+          <div class="spec"><div class="spec-v">★4.8</div><div class="spec-k">Rating</div></div>
+        </div>
+        <div class="vcard-amen">
+          <div class="atag g">WiFi</div>
+          <div class="atag g">USB-C</div>
+          <div class="atag">Agua</div>
+          <div class="atag">+3 más</div>
+        </div>
+        <div class="vcard-cta">
+          <button class="btn-detail">Ver detalles <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          <button class="btn-select">Seleccionar</button>
+        </div>
+      </div>
+
+      <!-- ── TAHOE Z71 2021 ── -->
+      <div class="vcard" onclick="openDetail(2)">
+        <div class="vcard-badge alt">Todo terreno</div>
+        <div class="vcard-photo" id="photo-2">
+          <div class="skeleton"></div>
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/2021_Chevrolet_Tahoe_Z71.jpg/800px-2021_Chevrolet_Tahoe_Z71.jpg"
+            alt="Chevrolet Tahoe Z71 2021"
+            onload="imgLoaded(2)"
+            onerror="imgError(2)">
+          <div class="vcard-photo-label">Chevrolet Tahoe Z71 2021 · Off-road</div>
+        </div>
+        <div class="vcard-info">
+          <div>
+            <div class="vcard-name">Tahoe Z71 Premier</div>
+            <div class="vcard-sub">Full-Size SUV · 4WD · 7 plazas</div>
+          </div>
+          <div class="vcard-price">
+            <span class="vcard-from">desde</span>
+            <div class="vcard-amt" style="color:rgba(201,168,76,.8)">$980</div>
+          </div>
+        </div>
+        <div class="vcard-specs">
+          <div class="spec"><div class="spec-v">7</div><div class="spec-k">Plazas</div></div>
+          <div class="spec"><div class="spec-v">4WD</div><div class="spec-k">Tracción</div></div>
+          <div class="spec"><div class="spec-v">A/C</div><div class="spec-k">Dual</div></div>
+          <div class="spec"><div class="spec-v">★4.9</div><div class="spec-k">Rating</div></div>
+        </div>
+        <div class="vcard-amen">
+          <div class="atag g">WiFi</div>
+          <div class="atag g">USB-C x4</div>
+          <div class="atag g">4WD</div>
+          <div class="atag">+4 más</div>
+        </div>
+        <div class="vcard-cta">
+          <button class="btn-detail">Ver detalles <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          <button class="btn-select">Seleccionar</button>
+        </div>
+      </div>
+
+      <!-- ── TAHOE HIGH COUNTRY (vista trasera) ── -->
+      <div class="vcard" onclick="openDetail(3)">
+        <div class="vcard-photo" id="photo-3">
+          <div class="skeleton"></div>
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/2021_Chevrolet_Tahoe_High_Country%2C_rear_12.24.20.jpg/800px-2021_Chevrolet_Tahoe_High_Country%2C_rear_12.24.20.jpg"
+            alt="Chevrolet Tahoe High Country rear 2021"
+            onload="imgLoaded(3)"
+            onerror="imgError(3)">
+          <div class="vcard-photo-label">Chevrolet Tahoe 2021 · Premium</div>
+        </div>
+        <div class="vcard-info">
+          <div>
+            <div class="vcard-name">Tahoe Premium XL</div>
+            <div class="vcard-sub">Full-Size SUV · Asientos capitán · 6p</div>
+          </div>
+          <div class="vcard-price">
+            <span class="vcard-from">desde</span>
+            <div class="vcard-amt" style="color:rgba(201,168,76,.8)">$1,100</div>
+          </div>
+        </div>
+        <div class="vcard-specs">
+          <div class="spec"><div class="spec-v">6</div><div class="spec-k">Plazas</div></div>
+          <div class="spec"><div class="spec-v">5</div><div class="spec-k">Maletas</div></div>
+          <div class="spec"><div class="spec-v">A/C</div><div class="spec-k">4-zona</div></div>
+          <div class="spec"><div class="spec-v">★5.0</div><div class="spec-k">Rating</div></div>
+        </div>
+        <div class="vcard-amen">
+          <div class="atag g">WiFi 5G</div>
+          <div class="atag g">Masaje</div>
+          <div class="atag g">Pantallas</div>
+          <div class="atag">Champán</div>
+          <div class="atag">+6 más</div>
+        </div>
+        <div class="vcard-cta">
+          <button class="btn-detail">Ver detalles <svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          <button class="btn-select">Seleccionar</button>
+        </div>
+      </div>
+
+    </div><!-- /list-body -->
+
+    <div class="bottom-nav">
+      <div class="ni">
+        <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <div class="nl">Inicio</div>
+      </div>
+      <div class="ni on">
+        <svg width="20" height="20" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <div class="nl" style="color:var(--G)">Flota</div>
+      </div>
+      <div class="ni">
+        <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        <div class="nl">Ahora</div>
+      </div>
+      <div class="ni">
+        <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <div class="nl">Perfil</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DETAIL ══ -->
+  <div class="screen" id="s-detail">
+    <div class="det-scroll">
+
+      <!-- Hero photo -->
+      <div class="det-hero-photo" id="det-hero">
+        <img id="det-main-img" src="" alt="">
+        <div class="det-nav">
+          <div class="det-back" onclick="goList()">
+            <svg width="11" height="11" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            <span class="det-back-lbl">Flota</span>
+          </div>
+          <div class="det-logo">AUT<span>U</span>M</div>
+        </div>
+        <div class="photo-credit" id="det-credit"></div>
+      </div>
+
+      <!-- Thumbnail strip -->
+      <div class="det-thumbs" id="det-thumbs"></div>
+
+      <!-- Name block -->
+      <div class="det-name-block">
+        <div class="det-cat" id="det-cat"></div>
+        <div class="det-name" id="det-name"></div>
+        <div class="det-model" id="det-model"></div>
+        <div class="det-price-row">
+          <span class="det-from">desde</span>
+          <span class="det-price" id="det-price"></span>
+          <span class="det-unit">por traslado</span>
+        </div>
+        <div class="det-stats">
+          <div class="dst"><div class="dst-v" id="dst0"></div><div class="dst-k">Plazas</div></div>
+          <div class="dst"><div class="dst-v" id="dst1"></div><div class="dst-k">Maletas</div></div>
+          <div class="dst"><div class="dst-v" id="dst2"></div><div class="dst-k">Motor</div></div>
+          <div class="dst"><div class="dst-v" id="dst3"></div><div class="dst-k">Tracción</div></div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="det-tabs">
+        <div class="dtab on" onclick="switchDTab(this,'t-amen')">Comodidades</div>
+        <div class="dtab" onclick="switchDTab(this,'t-int')">Interior</div>
+        <div class="dtab" onclick="switchDTab(this,'t-specs')">Ficha técnica</div>
+      </div>
+
+      <!-- Amenities tab -->
+      <div class="tab-pane on" id="t-amen">
+        <div class="amen-grid">
+          <div class="ac yes"><div class="ac-ico"><svg width="16" height="16" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="#c9a84c"/></svg></div><div class="ac-name">WiFi 5G Premium</div><div class="ac-desc">Hasta 200 Mbps por pasajero.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="16" height="16" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg></div><div class="ac-name">Cargadores USB-C</div><div class="ac-desc">4 puertos · 65W carga rápida.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="16" height="16" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="ac-name">Cristales privados</div><div class="ac-desc">Oscurecimiento nivel 5.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="16" height="16" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div><div class="ac-name">Agua Mineral Fiji</div><div class="ac-desc">2 botellas frías por pasajero.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="16" height="16" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="ac-name">Sistema de audio</div><div class="ac-desc">Bose 14 altavoces premium.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="16" height="16" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/></svg></div><div class="ac-name">Climatización Tri-zona</div><div class="ac-desc">Control independiente 3 zonas.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="16" height="16" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg></div><div class="ac-name">Pantalla trasera HD</div><div class="ac-desc">12.6" · HDMI · streaming.</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac yes"><div class="ac-ico"><svg width="16" height="16" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="ac-name">Conductor certificado</div><div class="ac-desc">Protocolo AUTUM · score 4.9+</div><div class="ac-status"><div class="sdot"></div>Incluido</div></div>
+          <div class="ac no"><div class="ac-ico"><svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="ac-name">Masaje en asiento</div><div class="ac-desc">Solo en Tahoe Premium XL.</div><div class="ac-status"><div class="sdot"></div>No incluido</div></div>
+          <div class="ac no"><div class="ac-ico"><svg width="16" height="16" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M3 6h.01M3 12h.01"/></svg></div><div class="ac-name">Mesa de trabajo</div><div class="ac-desc">Solo en Van Ejecutiva.</div><div class="ac-status"><div class="sdot"></div>No incluido</div></div>
+        </div>
+      </div>
+
+      <!-- Interior tab -->
+      <div class="tab-pane" id="t-int">
+        <div class="int-list">
+          <div class="int-item"><div class="int-n">01</div><div class="int-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div><div><div class="int-name">Asientos de cuero premium</div><div class="int-desc">Piel Perforada · Ventilados + Calefaccionados</div></div><div class="int-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+          <div class="int-item"><div class="int-n">02</div><div class="int-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div><div class="int-name">Pantalla Chevy Infotainment</div><div class="int-desc">10.2" · Android Auto · Apple CarPlay</div></div><div class="int-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+          <div class="int-item"><div class="int-n">03</div><div class="int-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div class="int-name">Techo panorámico Sky View</div><div class="int-desc">Dual-pane · Control eléctrico · Parasol</div></div><div class="int-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+          <div class="int-item"><div class="int-n">04</div><div class="int-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42"/></svg></div><div><div class="int-name">Iluminación ambiental LED</div><div class="int-desc">16 colores · ajuste automático</div></div><div class="int-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+          <div class="int-item"><div class="int-n">05</div><div class="int-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72"/></svg></div><div><div class="int-name">OnStar 4G LTE Hotspot</div><div class="int-desc">Conectividad 4G · Hasta 7 dispositivos</div></div><div class="int-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+          <div class="int-item"><div class="int-n">06</div><div class="int-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg></div><div><div class="int-name">Caja de piso plano</div><div class="int-desc">122 cu ft · fila 2 y 3 plegables</div></div><div class="int-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+          <div class="int-item"><div class="int-n">07</div><div class="int-ico"><svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3m1 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/><rect x="9" y="11" width="14" height="10" rx="2"/></svg></div><div><div class="int-name">Carga inalámbrica Qi</div><div class="int-desc">2 pads · 15W · compatible iPhone y Android</div></div><div class="int-ck"><svg width="7" height="7" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg></div></div>
+        </div>
+      </div>
+
+      <!-- Specs tab -->
+      <div class="tab-pane" id="t-specs">
+        <div style="display:flex;flex-direction:column;gap:0;">
+          <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--K3);">
+            <span style="font-size:.6rem;color:rgba(255,255,255,.35);">Motor</span>
+            <span style="font-size:.6rem;color:var(--W1);">V8 6.2L EcoTec3 · 420 hp</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--K3);">
+            <span style="font-size:.6rem;color:rgba(255,255,255,.35);">Transmisión</span>
+            <span style="font-size:.6rem;color:var(--W1);">Automática 10 velocidades</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--K3);">
+            <span style="font-size:.6rem;color:rgba(255,255,255,.35);">Torque</span>
+            <span style="font-size:.6rem;color:var(--W1);">460 lb·ft</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--K3);">
+            <span style="font-size:.6rem;color:rgba(255,255,255,.35);">0 – 100 km/h</span>
+            <span style="font-size:.6rem;color:var(--W1);">6.1 segundos</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--K3);">
+            <span style="font-size:.6rem;color:rgba(255,255,255,.35);">Dimensiones</span>
+            <span style="font-size:.6rem;color:var(--W1);">5,354 × 2,055 × 1,897 mm</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--K3);">
+            <span style="font-size:.6rem;color:rgba(255,255,255,.35);">Tracción</span>
+            <span style="font-size:.6rem;color:var(--W1);">4WD c/ auto-transfer</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--K3);">
+            <span style="font-size:.6rem;color:rgba(255,255,255,.35);">Suspensión</span>
+            <span style="font-size:.6rem;color:var(--W1);">Magnetic Ride Control</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--K3);">
+            <span style="font-size:.6rem;color:rgba(255,255,255,.35);">Frenos</span>
+            <span style="font-size:.6rem;color:var(--W1);">Disco ventilado 4 ruedas</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--K3);">
+            <span style="font-size:.6rem;color:rgba(255,255,255,.35);">Rines</span>
+            <span style="font-size:.6rem;color:var(--W1);">22" · Forjados · Negro pulido</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:11px 0;">
+            <span style="font-size:.6rem;color:rgba(255,255,255,.35);">Año del modelo</span>
+            <span style="font-size:.6rem;color:var(--G);">2021 · High Country</span>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:14px;background:var(--K);border:1px solid rgba(201,168,76,.15);font-size:.55rem;color:rgba(255,255,255,.25);letter-spacing:.08em;line-height:1.7;">
+          Vehículo preparado y verificado por el equipo técnico AUTUM. Mantenimiento certificado cada 5,000 km. Seguro todo riesgo de lujo incluido en cada traslado.
+        </div>
+      </div>
+
+    </div><!-- /det-scroll -->
+
+    <div class="det-footer">
+      <div class="det-foot-row">
+        <div class="det-foot-price" id="det-foot-price">$920</div>
+        <div class="avail"><div class="avail-dot"></div>3 unidades disponibles</div>
+      </div>
+      <button class="det-book">Reservar este vehículo</button>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<div style="position:fixed;bottom:22px;left:50%;transform:translateX(-50%);font-size:.48rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(201,168,76,.18);pointer-events:none;">
+  AUTUM · Fotos reales Wikimedia Commons CC-BY-SA
+</div>
+
+<script>
+// ── DATA ──
+const vehicles = [
+  {
+    name: 'Tahoe High Country',
+    cat: 'Full-Size Executive SUV · Chevrolet',
+    model: 'Chevrolet Tahoe 2021 · High Country · 6.2L V8',
+    price: '$920',
+    stats: ['8', '5', 'V8 6.2L', '4WD'],
+    photos: [
+      {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/2021_Chevrolet_Tahoe_High_Country%2C_front_12.24.20.jpg/800px-2021_Chevrolet_Tahoe_High_Country%2C_front_12.24.20.jpg',
+        lbl: 'Frente · High Country'
+      },
+      {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/2021_Chevrolet_Tahoe_High_Country%2C_rear_12.24.20.jpg/800px-2021_Chevrolet_Tahoe_High_Country%2C_rear_12.24.20.jpg',
+        lbl: 'Trasera'
+      },
+      {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/2021_Chevrolet_Tahoe_front_view_%28United_States%29.jpg/800px-2021_Chevrolet_Tahoe_front_view_%28United_States%29.jpg',
+        lbl: 'Vista lateral'
+      }
+    ],
+    credit: '© Wikimedia Commons CC-BY-SA'
+  },
+  {
+    name: 'Tahoe RST Sport',
+    cat: 'Full-Size Executive SUV · Sport',
+    model: 'Chevrolet Tahoe 2022 · RST · 5.3L V8',
+    price: '$850',
+    stats: ['7', '4', 'V8 5.3L', 'RWD'],
+    photos: [
+      {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2022_Chevrolet_Tahoe_RST%2C_front_3.7.22.jpg/800px-2022_Chevrolet_Tahoe_RST%2C_front_3.7.22.jpg',
+        lbl: 'Frente · RST'
+      },
+      {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/2022_Chevrolet_Tahoe_RST%2C_rear_3.7.22.jpg/800px-2022_Chevrolet_Tahoe_RST%2C_rear_3.7.22.jpg',
+        lbl: 'Trasera · RST'
+      }
+    ],
+    credit: '© Wikimedia Commons CC-BY-SA'
+  },
+  {
+    name: 'Tahoe Z71 Premier',
+    cat: 'Full-Size SUV · 4WD Off-Road',
+    model: 'Chevrolet Tahoe 2021 · Z71 · 5.3L V8',
+    price: '$980',
+    stats: ['7', '5', 'V8 5.3L', '4WD Z71'],
+    photos: [
+      {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/2021_Chevrolet_Tahoe_Z71.jpg/800px-2021_Chevrolet_Tahoe_Z71.jpg',
+        lbl: 'Z71 · Off-Road Edition'
+      },
+      {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/2021_Chevrolet_Tahoe_front_view_%28United_States%29.jpg/800px-2021_Chevrolet_Tahoe_front_view_%28United_States%29.jpg',
+        lbl: 'Vista frente'
+      }
+    ],
+    credit: '© Wikimedia Commons CC-BY-SA'
+  },
+  {
+    name: 'Tahoe Premium XL',
+    cat: 'Full-Size SUV · Asientos Capitán',
+    model: 'Chevrolet Tahoe 2021 · High Country · Capitán',
+    price: '$1,100',
+    stats: ['6', '5', 'V8 6.2L', '4WD'],
+    photos: [
+      {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/2021_Chevrolet_Tahoe_High_Country%2C_rear_12.24.20.jpg/800px-2021_Chevrolet_Tahoe_High_Country%2C_rear_12.24.20.jpg',
+        lbl: 'Trasera Premium'
+      },
+      {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/2021_Chevrolet_Tahoe_High_Country%2C_front_12.24.20.jpg/800px-2021_Chevrolet_Tahoe_High_Country%2C_front_12.24.20.jpg',
+        lbl: 'Frente Premium'
+      }
+    ],
+    credit: '© Wikimedia Commons CC-BY-SA'
+  }
+];
+
+let currentVehicle = 0;
+let currentPhoto = 0;
+
+// ── Image load handlers ──
+function imgLoaded(idx) {
+  const ph = document.getElementById('photo-' + idx);
+  if (ph) {
+    ph.querySelector('.skeleton').style.display = 'none';
+  }
+}
+function imgError(idx) {
+  const ph = document.getElementById('photo-' + idx);
+  if (!ph) return;
+  const sk = ph.querySelector('.skeleton');
+  if (sk) {
+    sk.style.background = 'var(--K3)';
+    sk.style.animation = 'none';
+    sk.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;"><svg width="32" height="22" viewBox="0 0 40 26" fill="none"><rect x="1" y="9" width="38" height="14" rx="3" stroke="rgba(201,168,76,.4)" stroke-width="1.2"/><path d="M6 9L10 2H28L34 9" stroke="rgba(201,168,76,.4)" stroke-width="1.2"/><circle cx="10" cy="22" r="3" fill="rgba(201,168,76,.3)"/><circle cx="30" cy="22" r="3" fill="rgba(201,168,76,.3)"/></svg><span style="font-size:.48rem;letter-spacing:.2em;color:rgba(201,168,76,.3);text-transform:uppercase;">Imagen no disponible</span></div>';
+  }
+}
+
+// ── Open detail ──
+function openDetail(idx) {
+  currentVehicle = idx;
+  currentPhoto = 0;
+  const v = vehicles[idx];
+
+  // Set main image
+  const mainImg = document.getElementById('det-main-img');
+  mainImg.src = v.photos[0].src;
+  mainImg.alt = v.name;
+
+  // Credit
+  document.getElementById('det-credit').textContent = v.credit;
+
+  // Thumbnails
+  const thumbsEl = document.getElementById('det-thumbs');
+  thumbsEl.innerHTML = '';
+  v.photos.forEach((p, i) => {
+    const th = document.createElement('div');
+    th.className = 'det-thumb' + (i === 0 ? ' on' : '');
+    th.innerHTML = `<img src="${p.src}" alt="${p.lbl}" title="${p.lbl}">`;
+    th.onclick = () => switchPhoto(i);
+    thumbsEl.appendChild(th);
+  });
+
+  // Info
+  document.getElementById('det-cat').textContent = v.cat;
+  document.getElementById('det-name').textContent = v.name;
+  document.getElementById('det-model').textContent = v.model;
+  document.getElementById('det-price').textContent = v.price;
+  document.getElementById('det-foot-price').textContent = v.price;
+  v.stats.forEach((s, i) => {
+    document.getElementById('dst' + i).textContent = s;
+  });
+
+  // Reset tabs
+  switchDTab(document.querySelector('.dtab'), 't-amen');
+
+  // Show screen
+  document.getElementById('s-list').classList.remove('active');
+  document.getElementById('s-detail').classList.add('active');
+  document.querySelector('.det-scroll').scrollTop = 0;
+}
+
+function switchPhoto(idx) {
+  currentPhoto = idx;
+  const v = vehicles[currentVehicle];
+  const mainImg = document.getElementById('det-main-img');
+  mainImg.style.opacity = '0';
+  setTimeout(() => {
+    mainImg.src = v.photos[idx].src;
+    mainImg.style.opacity = '1';
+  }, 150);
+  mainImg.style.transition = 'opacity .15s';
+
+  document.querySelectorAll('.det-thumb').forEach((t, i) => {
+    t.classList.toggle('on', i === idx);
+  });
+}
+
+function goList() {
+  document.getElementById('s-detail').classList.remove('active');
+  document.getElementById('s-list').classList.add('active');
+}
+
+function switchDTab(el, tabId) {
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('on'));
+  if (el) el.classList.add('on');
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('on'));
+  const target = document.getElementById(tabId);
+  if (target) target.classList.add('on');
+}
+
+function filterTabs(el) {
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+}
+</script>
+</body>
+</html>

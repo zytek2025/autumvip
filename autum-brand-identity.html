@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUTUM — Brand Identity System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,700&family=Raleway:wght@100;200;300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --K:#000000;--K1:#0a0a0a;--K2:#111;--K3:#1a1a1a;--K4:#252525;
+  --W:#ffffff;--W1:#f8f4ee;--W2:#ede8df;
+  --G:#c9a84c;--G1:#e8c96a;--G2:#a8832a;--G3:#f5e4b0;
+  --Go:rgba(201,168,76,.12);--Gb:rgba(201,168,76,.28);
+  --FD:'Playfair Display',serif;
+  --FC:'Cormorant Garamond',serif;
+  --FB:'Raleway',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--K1);color:var(--W1);font-family:var(--FB);font-weight:300;overflow-x:hidden;}
+
+/* ─ CURSOR ─ */
+.cur{width:7px;height:7px;background:var(--G);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .08s;}
+.cur2{width:36px;height:36px;border:1px solid var(--G);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .2s ease;opacity:.4;}
+body{cursor:none;}
+
+/* ─ NAV ─ */
+.bnav{position:fixed;top:0;left:0;right:0;z-index:800;height:70px;background:rgba(0,0,0,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--K3);display:flex;align-items:center;justify-content:space-between;padding:0 60px;}
+.bnav-logo{font-family:var(--FD);font-size:1.5rem;letter-spacing:.5em;color:var(--W);text-transform:uppercase;}
+.bnav-logo span{color:var(--G);}
+.bnav-links{display:flex;gap:32px;}
+.bnav-links a{font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s;}
+.bnav-links a:hover{color:var(--G);}
+
+/* ─ COVER ─ */
+.cover{height:100vh;background:var(--K);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.cover-lines{position:absolute;inset:0;}
+.cover-lines svg{width:100%;height:100%;opacity:.18;}
+.cover-content{position:relative;z-index:2;text-align:center;}
+.cover-eyebrow{font-size:.6rem;letter-spacing:.5em;text-transform:uppercase;color:var(--G);margin-bottom:32px;opacity:0;animation:rise 1s .3s forwards;}
+.cover-logo-main{display:block;margin:0 auto 28px;}
+.cover-title{font-family:var(--FD);font-size:clamp(1rem,2vw,1.4rem);font-weight:300;letter-spacing:.35em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:56px;opacity:0;animation:rise 1s .6s forwards;}
+.cover-year{font-size:.58rem;letter-spacing:.4em;color:rgba(201,168,76,.4);opacity:0;animation:rise 1s .9s forwards;}
+@keyframes rise{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ─ SECTION ─ */
+.pg{padding:100px 60px;position:relative;}
+.pg-num{position:absolute;top:100px;right:60px;font-family:var(--FD);font-size:8rem;font-weight:300;color:rgba(201,168,76,.04);line-height:1;user-select:none;}
+.pg-eye{font-size:.58rem;letter-spacing:.45em;text-transform:uppercase;color:var(--G);margin-bottom:14px;}
+.pg-title{font-family:var(--FD);font-size:clamp(2.2rem,3.5vw,3.4rem);font-weight:300;line-height:1.1;margin-bottom:20px;}
+.pg-title em{font-style:italic;color:var(--G);}
+.pg-rule{width:48px;height:1px;background:var(--G);margin-bottom:28px;}
+.pg-desc{font-size:.8rem;line-height:2;color:rgba(255,255,255,.38);max-width:540px;margin-bottom:60px;}
+.sec-divider{height:1px;background:linear-gradient(90deg,transparent,var(--G),transparent);opacity:.2;margin:0 60px;}
+
+/* ─ LOGO SECTION ─ */
+.logo-showcase{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.logo-panel{padding:60px 40px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;min-height:260px;border:1px solid var(--K3);transition:border-color .3s;}
+.logo-panel:hover{border-color:var(--Gb);}
+.logo-panel.dark{background:var(--K);}
+.logo-panel.mid{background:var(--K2);}
+.logo-panel.light{background:var(--W1);}
+.logo-panel.gold-bg{background:var(--G);}
+.logo-label{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:12px;}
+.logo-panel.light .logo-label,.logo-panel.gold-bg .logo-label{color:rgba(0,0,0,.4);}
+
+/* ─ LOGO SVG VERSIONS ─ */
+.lsv{width:180px;}
+
+/* ─ SYMBOL SECTION ─ */
+.symbol-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;}
+.sym-cell{padding:48px 30px;border:1px solid var(--K3);display:flex;flex-direction:column;align-items:center;gap:16px;transition:background .3s;}
+.sym-cell:hover{background:var(--K2);}
+.sym-label{font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center;}
+
+/* ─ COLOR PALETTE ─ */
+.palette{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;height:340px;}
+.swatch{display:flex;flex-direction:column;justify-content:flex-end;padding:22px 20px;position:relative;overflow:hidden;transition:flex .4s ease;cursor:none;}
+.swatch:hover{flex:1.2;}
+.swatch-name{font-family:var(--FD);font-size:1rem;font-weight:300;margin-bottom:4px;}
+.swatch-hex{font-size:.65rem;letter-spacing:.2em;font-family:'Courier New',monospace;}
+.swatch-role{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;opacity:.6;margin-top:6px;}
+
+/* ─ TYPOGRAPHY ─ */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+.type-card{padding:44px;border:1px solid var(--K3);}
+.type-specimen{margin-bottom:28px;}
+.type-meta{font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--G);margin-bottom:10px;}
+.type-name{font-size:.75rem;line-height:1.8;color:rgba(255,255,255,.35);}
+.type-weights{display:flex;gap:20px;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid var(--K3);}
+.tw{font-size:.7rem;color:rgba(255,255,255,.4);}
+
+/* ─ CONSTRUCTION ─ */
+.construct-wrap{background:var(--K);border:1px solid var(--K3);padding:60px;display:flex;align-items:center;justify-content:center;}
+
+/* ─ SPACING SYSTEM ─ */
+.spacing-row{display:flex;align-items:flex-end;gap:16px;margin-bottom:12px;}
+.sp-bar{background:var(--G);opacity:.7;}
+.sp-label{font-size:.58rem;letter-spacing:.2em;color:rgba(255,255,255,.35);white-space:nowrap;}
+
+/* ─ BRAND APPLICATIONS ─ */
+.apps-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+.app-card{border:1px solid var(--K3);overflow:hidden;}
+.app-label{padding:16px 22px;border-top:1px solid var(--K3);font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.3);}
+
+/* ─ BUSINESS CARD ─ */
+.bc-wrap{padding:48px;background:var(--K2);display:flex;justify-content:center;gap:30px;flex-wrap:wrap;}
+.bc{width:340px;height:190px;position:relative;border-radius:4px;overflow:hidden;cursor:none;transition:transform .4s;transform-style:preserve-3d;}
+.bc:hover{transform:perspective(800px) rotateY(-8deg) translateY(-4px);}
+.bc-front{width:100%;height:100%;background:var(--K);border:1px solid var(--K3);display:flex;flex-direction:column;justify-content:space-between;padding:28px 30px;position:relative;overflow:hidden;}
+.bc-front::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border:1px solid var(--Gb);transform:rotate(45deg);}
+.bc-front::after{content:'';position:absolute;top:-10px;right:-10px;width:80px;height:80px;border:1px solid rgba(201,168,76,.1);transform:rotate(45deg);}
+.bc-logo{font-family:var(--FD);font-size:1.3rem;letter-spacing:.5em;color:var(--W);}
+.bc-logo span{color:var(--G);}
+.bc-rule{width:28px;height:1px;background:var(--G);margin:8px 0;}
+.bc-name{font-family:var(--FD);font-size:.95rem;font-weight:300;color:var(--W);margin-bottom:3px;}
+.bc-role{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--G);}
+.bc-contact{font-size:.58rem;line-height:1.9;color:rgba(255,255,255,.35);}
+/* Back of card */
+.bc-back-wrap{width:340px;height:190px;}
+.bc-back{width:100%;height:100%;background:var(--G);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.bc-back::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1) 0%,transparent 50%);}
+.bc-back-logo{position:relative;z-index:1;}
+
+/* ─ LETTERHEAD ─ */
+.lh-preview{background:var(--W1);padding:40px;min-height:500px;position:relative;}
+.lh-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid rgba(0,0,0,.1);}
+.lh-logo-dark{font-family:var(--FD);font-size:1.6rem;letter-spacing:.45em;color:var(--K);text-transform:uppercase;}
+.lh-logo-dark span{color:var(--G2);}
+.lh-contact-dark{font-size:.65rem;line-height:1.8;color:rgba(0,0,0,.4);text-align:right;}
+.lh-gold-line{height:2px;background:linear-gradient(90deg,var(--G2),var(--G),transparent);margin-bottom:36px;}
+.lh-body{font-size:.78rem;line-height:2;color:rgba(0,0,0,.55);}
+.lh-footer{position:absolute;bottom:0;left:0;right:0;height:6px;background:linear-gradient(90deg,var(--K),var(--G),var(--K));}
+
+/* ─ ENVELOPE ─ */
+.env-wrap{padding:48px;background:var(--K3);display:flex;justify-content:center;}
+.env{width:480px;height:270px;background:var(--W2);border-radius:4px;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6);}
+.env::before{content:'';position:absolute;top:0;left:0;right:0;bottom:50%;background:linear-gradient(135deg,transparent 49%, var(--W1) 50%);border-bottom:1px solid rgba(0,0,0,.08);}
+.env-logo{position:absolute;bottom:30px;left:36px;}
+.env-address{position:absolute;bottom:38px;right:36px;font-size:.62rem;line-height:1.8;color:rgba(0,0,0,.45);text-align:right;}
+.env-gold-strip{position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--G2),var(--G));}
+.env-stamp{position:absolute;top:28px;right:36px;width:52px;height:62px;border:1px solid rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;}
+
+/* ─ ICON SET ─ */
+.icon-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;}
+.icon-cell{padding:36px 20px;border:1px solid var(--K3);display:flex;flex-direction:column;align-items:center;gap:14px;transition:background .3s;}
+.icon-cell:hover{background:var(--K2);}
+.icon-name{font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.28);}
+
+/* ─ PATTERN ─ */
+.pattern-showcase{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.pat-cell{height:220px;border:1px solid var(--K3);overflow:hidden;}
+
+/* ─ MOCKUP PHONE ─ */
+.mockups-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;}
+.mockup-phone{background:var(--K2);padding:40px;display:flex;justify-content:center;border:1px solid var(--K3);}
+.phone-frame{width:180px;height:360px;background:var(--K);border:2px solid var(--K4);border-radius:32px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.8);}
+.phone-screen{width:100%;height:100%;display:flex;flex-direction:column;}
+.ph-status{height:28px;background:var(--K);display:flex;align-items:center;justify-content:center;}
+.ph-notch{width:60px;height:14px;background:var(--K4);border-radius:0 0 10px 10px;}
+.ph-content{flex:1;overflow:hidden;}
+
+/* ─ TONE OF VOICE ─ */
+.tov-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.tov-card{padding:36px 30px;border:1px solid var(--K3);position:relative;overflow:hidden;transition:border-color .3s;}
+.tov-card:hover{border-color:var(--Gb);}
+.tov-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--G),transparent);opacity:0;transition:opacity .3s;}
+.tov-card:hover::before{opacity:1;}
+.tov-num{font-family:var(--FD);font-size:2.8rem;font-weight:300;color:rgba(201,168,76,.1);line-height:1;margin-bottom:16px;}
+.tov-title{font-family:var(--FD);font-size:1.1rem;font-weight:400;margin-bottom:12px;color:var(--W);}
+.tov-text{font-size:.74rem;line-height:1.9;color:rgba(255,255,255,.32);}
+.tov-ex{margin-top:16px;padding-top:16px;border-top:1px solid var(--K3);font-size:.7rem;font-style:italic;color:rgba(201,168,76,.6);}
+
+/* ─ DO / DON'T ─ */
+.dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.dd-col{padding:44px;}
+.dd-col.do{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.12);}
+.dd-col.dont{background:rgba(255,255,255,.02);border:1px solid var(--K3);}
+.dd-head{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.dd-dot{width:8px;height:8px;border-radius:50%;}
+.dd-dot.g{background:var(--G);}
+.dd-dot.r{background:#666;}
+.dd-headtxt{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;}
+.dd-item{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;}
+.dd-icon{font-size:.9rem;flex-shrink:0;margin-top:2px;}
+.dd-text{font-size:.75rem;line-height:1.8;color:rgba(255,255,255,.45);}
+
+/* ─ STATIONERY PACK ─ */
+.stat-wrap{background:var(--K2);padding:60px;display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+
+/* ─ SCROLLBAR ─ */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--K);}
+::-webkit-scrollbar-thumb{background:var(--G2);border-radius:2px;}
+
+@media(max-width:900px){.bnav{padding:0 24px;}.bnav-links{display:none;}.pg{padding:70px 24px;}.logo-showcase{grid-template-columns:1fr;}.palette{grid-template-columns:1fr 1fr;height:auto;}.apps-grid{grid-template-columns:1fr;}.type-grid{grid-template-columns:1fr;}.tov-grid{grid-template-columns:1fr;}.dd-grid{grid-template-columns:1fr;}.mockups-row{grid-template-columns:1fr;}.symbol-grid{grid-template-columns:1fr 1fr;}.icon-grid{grid-template-columns:repeat(3,1fr);}.pattern-showcase{grid-template-columns:1fr;}.stat-wrap{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="cur" id="c1"></div>
+<div class="cur2" id="c2"></div>
+
+<!-- NAV -->
+<nav class="bnav">
+  <div class="bnav-logo">AUT<span>U</span>M</div>
+  <div class="bnav-links">
+    <a href="#logos">Logotipo</a>
+    <a href="#color">Color</a>
+    <a href="#tipografia">Tipografía</a>
+    <a href="#iconos">Iconos</a>
+    <a href="#aplicaciones">Aplicaciones</a>
+    <a href="#voz">Voz</a>
+  </div>
+</nav>
+
+<!-- ══ COVER ══ -->
+<section class="cover">
+  <div class="cover-lines">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <!-- Diagonal geometric lines -->
+      <line x1="0" y1="900" x2="500" y2="0" stroke="#c9a84c" stroke-width=".5"/>
+      <line x1="100" y1="900" x2="600" y2="0" stroke="#c9a84c" stroke-width=".3"/>
+      <line x1="700" y1="900" x2="1440" y2="200" stroke="#c9a84c" stroke-width=".4"/>
+      <line x1="900" y1="900" x2="1440" y2="400" stroke="#c9a84c" stroke-width=".3"/>
+      <!-- Corner ornaments -->
+      <path d="M60,60 L60,140 M60,60 L140,60" stroke="#c9a84c" stroke-width=".8" fill="none"/>
+      <path d="M1380,60 L1380,140 M1380,60 L1300,60" stroke="#c9a84c" stroke-width=".8" fill="none"/>
+      <path d="M60,840 L60,760 M60,840 L140,840" stroke="#c9a84c" stroke-width=".8" fill="none"/>
+      <path d="M1380,840 L1380,760 M1380,840 L1300,840" stroke="#c9a84c" stroke-width=".8" fill="none"/>
+      <!-- Center diamond -->
+      <polygon points="720,100 780,200 720,300 660,200" stroke="#c9a84c" stroke-width=".4" fill="none"/>
+      <polygon points="720,120 760,200 720,280 680,200" stroke="#c9a84c" stroke-width=".3" fill="none"/>
+    </svg>
+  </div>
+  <div class="cover-content">
+    <p class="cover-eyebrow" style="opacity:0;animation:rise 1s .2s forwards">Brand Identity System</p>
+    <!-- MAIN LOGO SVG -->
+    <svg class="cover-logo-main" width="420" height="120" viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg" style="opacity:0;animation:rise 1.2s .4s forwards">
+      <!-- Wordmark -->
+      <text x="210" y="78" text-anchor="middle" font-family="'Playfair Display',serif" font-size="72" font-weight="300" letter-spacing="24" fill="#ffffff">AUTUM</text>
+      <!-- Gold U highlight -->
+      <text x="210" y="78" text-anchor="middle" font-family="'Playfair Display',serif" font-size="72" font-weight="300" letter-spacing="24" fill="none">AUTUM</text>
+      <!-- Gold accent on U -->
+      <rect x="162" y="80" width="47" height="2" fill="#c9a84c" opacity=".7"/>
+      <!-- Underline rule -->
+      <line x1="60" y1="96" x2="360" y2="96" stroke="#c9a84c" stroke-width=".8" opacity=".4"/>
+      <!-- Tagline -->
+      <text x="210" y="114" text-anchor="middle" font-family="'Raleway',sans-serif" font-size="9" font-weight="300" letter-spacing="8" fill="rgba(201,168,76,0.6)">MOVILIDAD EJECUTIVA</text>
+    </svg>
+    <p class="cover-title" style="opacity:0;animation:rise 1s .7s forwards">Manual de Identidad Visual</p>
+    <p class="cover-year" style="opacity:0;animation:rise 1s 1s forwards">© 2024 — Versión 1.0</p>
+  </div>
+</section>
+
+<!-- ══ 01 · LOGO ══ -->
+<section class="pg" id="logos" style="background:var(--K1)">
+  <div class="pg-num">01</div>
+  <div class="pg-eye">01 — Logotipo</div>
+  <h2 class="pg-title">La marca en su<br><em>forma esencial</em></h2>
+  <div class="pg-rule"></div>
+  <p class="pg-desc">El logotipo AUTUM se construye sobre la tipografía Playfair Display en su variante Light, con espaciado extendido que transmite apertura y elegancia. La "U" dorada actúa como ancla visual y diferenciador único de la marca.</p>
+
+  <!-- LOGO VERSIONS -->
+  <div class="logo-showcase" id="logos">
+
+    <!-- VERSION 1: Dark bg - full -->
+    <div class="logo-panel dark" style="grid-column:span 2;">
+      <svg width="340" height="130" viewBox="0 0 340 130" xmlns="http://www.w3.org/2000/svg">
+        <!-- Monogram mark top -->
+        <g transform="translate(170,0)">
+          <!-- Diamond enclosure -->
+          <polygon points="0,-28 22,0 0,28 -22,0" stroke="#c9a84c" stroke-width="1" fill="none"/>
+          <polygon points="0,-20 15,0 0,20 -15,0" stroke="rgba(201,168,76,.3)" stroke-width=".5" fill="none"/>
+          <!-- A letter inside diamond -->
+          <text x="0" y="6" text-anchor="middle" font-family="'Playfair Display',serif" font-size="18" font-weight="400" fill="#c9a84c">A</text>
+        </g>
+        <!-- Wordmark -->
+        <text x="170" y="90" text-anchor="middle" font-family="'Playfair Display',serif" font-size="52" font-weight="300" letter-spacing="18" fill="#ffffff">AUTUM</text>
+        <!-- Gold U underline -->
+        <rect x="127" y="92" width="36" height="1.5" fill="#c9a84c"/>
+        <!-- Separator line -->
+        <line x1="50" y1="104" x2="290" y2="104" stroke="rgba(201,168,76,.35)" stroke-width=".6"/>
+        <!-- Tagline -->
+        <text x="170" y="120" text-anchor="middle" font-family="'Raleway',sans-serif" font-size="7.5" font-weight="300" letter-spacing="6" fill="rgba(201,168,76,0.55)">MOVILIDAD EJECUTIVA</text>
+      </svg>
+      <span class="logo-label">Versión Principal — Fondo Oscuro</span>
+    </div>
+
+    <!-- VERSION 2: Gold bg -->
+    <div class="logo-panel gold-bg">
+      <svg width="200" height="130" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(100,0)">
+          <polygon points="0,-28 22,0 0,28 -22,0" stroke="rgba(0,0,0,.4)" stroke-width="1" fill="none"/>
+          <polygon points="0,-20 15,0 0,20 -15,0" stroke="rgba(0,0,0,.2)" stroke-width=".5" fill="none"/>
+          <text x="0" y="6" text-anchor="middle" font-family="'Playfair Display',serif" font-size="18" font-weight="400" fill="rgba(0,0,0,.7)">A</text>
+        </g>
+        <text x="100" y="90" text-anchor="middle" font-family="'Playfair Display',serif" font-size="42" font-weight="300" letter-spacing="14" fill="#000000">AUTUM</text>
+        <rect x="70" y="92" width="28" height="1.5" fill="rgba(0,0,0,.4)"/>
+        <line x1="20" y1="104" x2="180" y2="104" stroke="rgba(0,0,0,.2)" stroke-width=".6"/>
+        <text x="100" y="118" text-anchor="middle" font-family="'Raleway',sans-serif" font-size="6.5" font-weight="300" letter-spacing="5" fill="rgba(0,0,0,0.45)">MOVILIDAD EJECUTIVA</text>
+      </svg>
+      <span class="logo-label" style="color:rgba(0,0,0,.45)">Versión Dorada</span>
+    </div>
+
+  </div>
+
+  <br>
+
+  <!-- HORIZONTAL & STACKED VARIANTS -->
+  <div class="logo-showcase" style="margin-top:2px;">
+
+    <!-- White version -->
+    <div class="logo-panel dark">
+      <svg width="220" height="60" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+        <text x="110" y="42" text-anchor="middle" font-family="'Playfair Display',serif" font-size="40" font-weight="300" letter-spacing="14" fill="#ffffff">AUTUM</text>
+        <rect x="82" y="44" width="28" height="1.5" fill="#c9a84c"/>
+      </svg>
+      <span class="logo-label">Wordmark Simple — Blanco</span>
+    </div>
+
+    <!-- Gold wordmark -->
+    <div class="logo-panel dark">
+      <svg width="220" height="60" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+        <text x="110" y="42" text-anchor="middle" font-family="'Playfair Display',serif" font-size="40" font-weight="300" letter-spacing="14" fill="#c9a84c">AUTUM</text>
+        <rect x="82" y="44" width="28" height="1.5" fill="rgba(201,168,76,.4)"/>
+      </svg>
+      <span class="logo-label">Wordmark Simple — Dorado</span>
+    </div>
+
+    <!-- Light bg version -->
+    <div class="logo-panel light">
+      <svg width="220" height="60" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+        <text x="110" y="42" text-anchor="middle" font-family="'Playfair Display',serif" font-size="40" font-weight="300" letter-spacing="14" fill="#0a0a0a">AUTUM</text>
+        <rect x="82" y="44" width="28" height="1.5" fill="#c9a84c"/>
+      </svg>
+      <span class="logo-label" style="color:rgba(0,0,0,.4)">Wordmark — Fondo Claro</span>
+    </div>
+
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══ 02 · MONOGRAM & SÍMBOLO ══ -->
+<section class="pg" style="background:var(--K)">
+  <div class="pg-num">02</div>
+  <div class="pg-eye">02 — Símbolo & Monograma</div>
+  <h2 class="pg-title">El emblema<br><em>AUTUM</em></h2>
+  <div class="pg-rule"></div>
+  <p class="pg-desc">El monograma se construye a partir de la "A" de AUTUM inscrita en un rombo geométrico — figura que evoca precisión, exclusividad y movimiento. Puede utilizarse de forma independiente como sello de marca.</p>
+
+  <div class="symbol-grid">
+
+    <!-- Symbol v1: Diamond A -->
+    <div class="sym-cell">
+      <svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="55,8 100,55 55,102 10,55" stroke="#c9a84c" stroke-width="1.2" fill="none"/>
+        <polygon points="55,22 86,55 55,88 24,55" stroke="rgba(201,168,76,.3)" stroke-width=".6" fill="none"/>
+        <text x="55" y="63" text-anchor="middle" font-family="'Playfair Display',serif" font-size="30" font-weight="400" fill="#c9a84c">A</text>
+      </svg>
+      <span class="sym-label">Monograma Primario</span>
+    </div>
+
+    <!-- Symbol v2: Circle A -->
+    <div class="sym-cell">
+      <svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="55" cy="55" r="46" stroke="#c9a84c" stroke-width="1" fill="none"/>
+        <circle cx="55" cy="55" r="38" stroke="rgba(201,168,76,.25)" stroke-width=".5" fill="none"/>
+        <text x="55" y="64" text-anchor="middle" font-family="'Playfair Display',serif" font-size="34" font-weight="300" fill="#c9a84c" letter-spacing="2">A</text>
+        <!-- Arc text -->
+        <path id="arc1" d="M 15,55 A 40,40 0 0,1 95,55" fill="none"/>
+        <text font-family="'Raleway',sans-serif" font-size="5.5" fill="rgba(201,168,76,.5)" letter-spacing="4">
+          <textPath href="#arc1" startOffset="5%">AUTUM · MOVILIDAD EJECUTIVA ·</textPath>
+        </text>
+      </svg>
+      <span class="sym-label">Sello Circular</span>
+    </div>
+
+    <!-- Symbol v3: Minimal A -->
+    <div class="sym-cell">
+      <svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <!-- Art deco A -->
+        <line x1="55" y1="15" x2="20" y2="95" stroke="#c9a84c" stroke-width="2"/>
+        <line x1="55" y1="15" x2="90" y2="95" stroke="#c9a84c" stroke-width="2"/>
+        <line x1="33" y1="62" x2="77" y2="62" stroke="#c9a84c" stroke-width="1.5"/>
+        <!-- Decorative inner lines -->
+        <line x1="55" y1="15" x2="55" y2="40" stroke="rgba(201,168,76,.3)" stroke-width=".8"/>
+        <line x1="55" y1="40" x2="35" y2="90" stroke="rgba(201,168,76,.15)" stroke-width=".5"/>
+        <line x1="55" y1="40" x2="75" y2="90" stroke="rgba(201,168,76,.15)" stroke-width=".5"/>
+      </svg>
+      <span class="sym-label">Monograma Art Deco</span>
+    </div>
+
+    <!-- Symbol v4: Stacked -->
+    <div class="sym-cell">
+      <svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <!-- Double rhombus -->
+        <polygon points="55,10 96,55 55,100 14,55" stroke="#c9a84c" stroke-width="1.2" fill="rgba(201,168,76,.04)"/>
+        <!-- Inner design -->
+        <line x1="55" y1="10" x2="55" y2="100" stroke="rgba(201,168,76,.15)" stroke-width=".5"/>
+        <line x1="14" y1="55" x2="96" y2="55" stroke="rgba(201,168,76,.15)" stroke-width=".5"/>
+        <text x="55" y="52" text-anchor="middle" font-family="'Playfair Display',serif" font-size="14" font-weight="300" fill="rgba(255,255,255,.9)" letter-spacing="5">AUT</text>
+        <text x="55" y="70" text-anchor="middle" font-family="'Playfair Display',serif" font-size="14" font-weight="300" fill="#c9a84c" letter-spacing="5">UM</text>
+      </svg>
+      <span class="sym-label">Sello Dividido</span>
+    </div>
+
+    <!-- Symbol v5: Crown A -->
+    <div class="sym-cell">
+      <svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <!-- Crown shape -->
+        <path d="M20,80 L20,40 L35,55 L55,20 L75,55 L90,40 L90,80 Z" stroke="#c9a84c" stroke-width="1" fill="none"/>
+        <!-- Crown base -->
+        <line x1="18" y1="80" x2="92" y2="80" stroke="#c9a84c" stroke-width="1.5"/>
+        <!-- Gems -->
+        <circle cx="55" cy="22" r="3" fill="#c9a84c"/>
+        <circle cx="22" cy="40" r="2" fill="rgba(201,168,76,.5)"/>
+        <circle cx="88" cy="40" r="2" fill="rgba(201,168,76,.5)"/>
+        <!-- A inside -->
+        <text x="55" y="74" text-anchor="middle" font-family="'Playfair Display',serif" font-size="22" font-weight="300" fill="rgba(255,255,255,.8)">A</text>
+      </svg>
+      <span class="sym-label">Corona Ejecutiva</span>
+    </div>
+
+    <!-- Symbol v6: Minimal stamp -->
+    <div class="sym-cell">
+      <svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <rect x="12" y="12" width="86" height="86" stroke="#c9a84c" stroke-width="1" fill="none"/>
+        <rect x="20" y="20" width="70" height="70" stroke="rgba(201,168,76,.25)" stroke-width=".5" fill="none"/>
+        <text x="55" y="66" text-anchor="middle" font-family="'Playfair Display',serif" font-size="42" font-weight="300" fill="#c9a84c">A</text>
+        <line x1="12" y1="82" x2="98" y2="82" stroke="rgba(201,168,76,.3)" stroke-width=".5"/>
+        <text x="55" y="94" text-anchor="middle" font-family="'Raleway',sans-serif" font-size="6" letter-spacing="5" fill="rgba(201,168,76,.5)">AUTUM</text>
+      </svg>
+      <span class="sym-label">Sello Cuadrado</span>
+    </div>
+
+    <!-- Symbol v7: White bg -->
+    <div class="sym-cell" style="background:var(--W1);">
+      <svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="55,8 100,55 55,102 10,55" stroke="#a8832a" stroke-width="1.2" fill="none"/>
+        <polygon points="55,22 86,55 55,88 24,55" stroke="rgba(168,131,42,.3)" stroke-width=".6" fill="none"/>
+        <text x="55" y="63" text-anchor="middle" font-family="'Playfair Display',serif" font-size="30" font-weight="400" fill="#a8832a">A</text>
+      </svg>
+      <span class="sym-label" style="color:rgba(0,0,0,.35)">Sobre Blanco</span>
+    </div>
+
+    <!-- Symbol v8: Outlined -->
+    <div class="sym-cell">
+      <svg width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="55,8 100,55 55,102 10,55" stroke="#c9a84c" stroke-width="1.2" fill="rgba(201,168,76,.06)"/>
+        <text x="55" y="42" text-anchor="middle" font-family="'Playfair Display',serif" font-size="11" font-weight="300" fill="rgba(255,255,255,.7)" letter-spacing="4">AUT</text>
+        <line x1="30" y1="52" x2="80" y2="52" stroke="rgba(201,168,76,.4)" stroke-width=".6"/>
+        <text x="55" y="68" text-anchor="middle" font-family="'Playfair Display',serif" font-size="11" font-weight="300" fill="#c9a84c" letter-spacing="4">UM</text>
+        <text x="55" y="82" text-anchor="middle" font-family="'Raleway',sans-serif" font-size="5.5" letter-spacing="4" fill="rgba(201,168,76,.4)">EXECUTIVE</text>
+      </svg>
+      <span class="sym-label">Badge Completo</span>
+    </div>
+
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══ 03 · COLOR ══ -->
+<section class="pg" id="color" style="background:var(--K1);">
+  <div class="pg-num">03</div>
+  <div class="pg-eye">03 — Paleta de Color</div>
+  <h2 class="pg-title">Negro. Blanco.<br><em>Oro.</em></h2>
+  <div class="pg-rule"></div>
+  <p class="pg-desc">Tres colores. Sin dilución. La paleta AUTUM comunica poder, pureza y prosperidad. Negro como cimiento de autoridad, blanco como espacio para respirar, y el dorado como el privilegio visible.</p>
+
+  <div class="palette">
+    <!-- Negro principal (large) -->
+    <div class="swatch" style="background:var(--K);">
+      <div class="swatch-name" style="color:var(--W1)">Negro Absoluto</div>
+      <div class="swatch-hex" style="color:rgba(255,255,255,.4)">#000000</div>
+      <div class="swatch-role" style="color:rgba(201,168,76,.5)">Color Primario</div>
+    </div>
+    <!-- Negro suave -->
+    <div class="swatch" style="background:#111111;">
+      <div class="swatch-name" style="color:var(--W1)">Negro Profundo</div>
+      <div class="swatch-hex" style="color:rgba(255,255,255,.4)">#111111</div>
+      <div class="swatch-role" style="color:rgba(201,168,76,.5)">Fondos UI</div>
+    </div>
+    <!-- Blanco -->
+    <div class="swatch" style="background:var(--W);">
+      <div class="swatch-name" style="color:var(--K)">Blanco Puro</div>
+      <div class="swatch-hex" style="color:rgba(0,0,0,.4)">#FFFFFF</div>
+      <div class="swatch-role" style="color:rgba(0,0,0,.4)">Color Primario</div>
+    </div>
+    <!-- Blanco suave -->
+    <div class="swatch" style="background:var(--W2);">
+      <div class="swatch-name" style="color:var(--K)">Marfil</div>
+      <div class="swatch-hex" style="color:rgba(0,0,0,.4)">#EDE8DF</div>
+      <div class="swatch-role" style="color:rgba(0,0,0,.35)">Papel / Membrete</div>
+    </div>
+    <!-- Gold -->
+    <div class="swatch" style="background:var(--G);">
+      <div class="swatch-name" style="color:var(--K)">Oro Real</div>
+      <div class="swatch-hex" style="color:rgba(0,0,0,.5)">#C9A84C</div>
+      <div class="swatch-role" style="color:rgba(0,0,0,.4)">Acento Principal</div>
+    </div>
+  </div>
+
+  <!-- Color sub-palette -->
+  <br>
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:2px;height:80px;margin-top:2px;">
+    <div style="background:#000000;display:flex;align-items:flex-end;padding:10px;"><span style="font-size:.55rem;color:rgba(255,255,255,.3);letter-spacing:.2em">#000000</span></div>
+    <div style="background:#0a0a0a;display:flex;align-items:flex-end;padding:10px;"><span style="font-size:.55rem;color:rgba(255,255,255,.3);letter-spacing:.2em">#0A0A0A</span></div>
+    <div style="background:#111111;display:flex;align-items:flex-end;padding:10px;"><span style="font-size:.55rem;color:rgba(255,255,255,.3);letter-spacing:.2em">#111111</span></div>
+    <div style="background:#1a1a1a;display:flex;align-items:flex-end;padding:10px;"><span style="font-size:.55rem;color:rgba(255,255,255,.3);letter-spacing:.2em">#1A1A1A</span></div>
+    <div style="background:#252525;display:flex;align-items:flex-end;padding:10px;"><span style="font-size:.55rem;color:rgba(255,255,255,.3);letter-spacing:.2em">#252525</span></div>
+    <div style="background:#333333;display:flex;align-items:flex-end;padding:10px;"><span style="font-size:.55rem;color:rgba(255,255,255,.3);letter-spacing:.2em">#333333</span></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:2px;height:56px;margin-top:2px;">
+    <div style="background:#8a6e28;display:flex;align-items:center;justify-content:center;"><span style="font-size:.55rem;color:rgba(0,0,0,.6);letter-spacing:.2em">#8A6E28</span></div>
+    <div style="background:#a8832a;display:flex;align-items:center;justify-content:center;"><span style="font-size:.55rem;color:rgba(0,0,0,.6);letter-spacing:.2em">#A8832A</span></div>
+    <div style="background:#c9a84c;display:flex;align-items:center;justify-content:center;"><span style="font-size:.55rem;color:rgba(0,0,0,.6);letter-spacing:.2em">#C9A84C</span></div>
+    <div style="background:#e8c96a;display:flex;align-items:center;justify-content:center;"><span style="font-size:.55rem;color:rgba(0,0,0,.6);letter-spacing:.2em">#E8C96A</span></div>
+    <div style="background:#f5e4b0;display:flex;align-items:center;justify-content:center;"><span style="font-size:.55rem;color:rgba(0,0,0,.5);letter-spacing:.2em">#F5E4B0</span></div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══ 04 · TIPOGRAFÍA ══ -->
+<section class="pg" id="tipografia" style="background:var(--K)">
+  <div class="pg-num">04</div>
+  <div class="pg-eye">04 — Tipografía</div>
+  <h2 class="pg-title">Las fuentes de<br><em>la excelencia</em></h2>
+  <div class="pg-rule"></div>
+  <p class="pg-desc">Dos familias tipográficas. Una para el poder expresivo del display, otra para la claridad de la comunicación. Juntas articulan el carácter dual de AUTUM: seductor y preciso.</p>
+
+  <div class="type-grid">
+    <!-- Display font -->
+    <div class="type-card">
+      <div class="type-meta">Fuente Principal — Display</div>
+      <div class="type-specimen">
+        <div style="font-family:var(--FD);font-size:4.5rem;font-weight:300;line-height:1;color:var(--W);margin-bottom:8px;">Aa</div>
+        <div style="font-family:var(--FD);font-size:1.8rem;font-weight:300;font-style:italic;color:var(--G);margin-bottom:16px;">Playfair Display</div>
+        <div style="font-family:var(--FD);font-size:.85rem;line-height:1.9;color:rgba(255,255,255,.45);">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 &amp; . , ; : ? ! — " "</div>
+      </div>
+      <div class="type-name">Uso: Títulos, nombres de marca, citas, elementos hero. Transmite refinamiento y autoridad editorial.</div>
+      <div class="type-weights">
+        <div style="font-family:var(--FD);font-weight:300;"><span style="font-size:.9rem;">Light 300</span></div>
+        <div style="font-family:var(--FD);font-weight:400;"><span style="font-size:.9rem;">Regular 400</span></div>
+        <div style="font-family:var(--FD);font-weight:300;font-style:italic;color:var(--G);"><span style="font-size:.9rem;">Italic Light</span></div>
+        <div style="font-family:var(--FD);font-weight:700;"><span style="font-size:.9rem;">Bold 700</span></div>
+      </div>
+    </div>
+
+    <!-- Body font -->
+    <div class="type-card">
+      <div class="type-meta">Fuente Secundaria — Cuerpo</div>
+      <div class="type-specimen">
+        <div style="font-family:var(--FB);font-size:4.5rem;font-weight:100;line-height:1;color:var(--W);margin-bottom:8px;">Aa</div>
+        <div style="font-family:var(--FB);font-size:1.8rem;font-weight:200;color:var(--G);margin-bottom:16px;">Raleway</div>
+        <div style="font-family:var(--FB);font-size:.85rem;line-height:1.9;color:rgba(255,255,255,.45);font-weight:300;">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 &amp; . , ; : ? ! — " "</div>
+      </div>
+      <div class="type-name">Uso: Etiquetas, navegación, botones, cuerpo de texto, meta-información. Transmite modernidad y claridad.</div>
+      <div class="type-weights">
+        <div style="font-family:var(--FB);font-weight:100;"><span style="font-size:.9rem;">Thin 100</span></div>
+        <div style="font-family:var(--FB);font-weight:200;"><span style="font-size:.9rem;">ExLight 200</span></div>
+        <div style="font-family:var(--FB);font-weight:300;"><span style="font-size:.9rem;">Light 300</span></div>
+        <div style="font-family:var(--FB);font-weight:500;"><span style="font-size:.9rem;">Medium 500</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Type scale -->
+  <br>
+  <div style="border:1px solid var(--K3);padding:44px;background:var(--K1);margin-top:2px;">
+    <div class="pg-eye" style="margin-bottom:28px;">Escala Tipográfica</div>
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <div style="display:flex;align-items:baseline;gap:24px;border-bottom:1px solid var(--K3);padding-bottom:18px;">
+        <span style="font-size:.58rem;letter-spacing:.2em;color:rgba(201,168,76,.5);width:80px;flex-shrink:0;">H1 · 72px</span>
+        <span style="font-family:var(--FD);font-size:clamp(2rem,5vw,4.5rem);font-weight:300;color:var(--W);">El arte de llegar</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:24px;border-bottom:1px solid var(--K3);padding-bottom:18px;">
+        <span style="font-size:.58rem;letter-spacing:.2em;color:rgba(201,168,76,.5);width:80px;flex-shrink:0;">H2 · 48px</span>
+        <span style="font-family:var(--FD);font-size:clamp(1.4rem,3vw,3rem);font-weight:300;font-style:italic;color:var(--G);">Flota de élite</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:24px;border-bottom:1px solid var(--K3);padding-bottom:18px;">
+        <span style="font-size:.58rem;letter-spacing:.2em;color:rgba(201,168,76,.5);width:80px;flex-shrink:0;">H3 · 28px</span>
+        <span style="font-family:var(--FD);font-size:clamp(1.1rem,2vw,1.75rem);font-weight:300;color:var(--W);">Traslados Ejecutivos</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:24px;border-bottom:1px solid var(--K3);padding-bottom:18px;">
+        <span style="font-size:.58rem;letter-spacing:.2em;color:rgba(201,168,76,.5);width:80px;flex-shrink:0;">Label · 11px</span>
+        <span style="font-family:var(--FB);font-size:.68rem;letter-spacing:.35em;text-transform:uppercase;color:var(--G);">CLASE EJECUTIVA</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:24px;">
+        <span style="font-size:.58rem;letter-spacing:.2em;color:rgba(201,168,76,.5);width:80px;flex-shrink:0;">Body · 14px</span>
+        <span style="font-family:var(--FB);font-size:.87rem;line-height:2;font-weight:300;color:rgba(255,255,255,.45);">Cada detalle del servicio AUTUM ha sido diseñado para que el pasajero llegue a su destino sintiéndose diferente.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══ 05 · ICONOS ══ -->
+<section class="pg" id="iconos" style="background:var(--K1)">
+  <div class="pg-num">05</div>
+  <div class="pg-eye">05 — Sistema de Iconos</div>
+  <h2 class="pg-title">Iconografía<br><em>de línea fina</em></h2>
+  <div class="pg-rule"></div>
+  <p class="pg-desc">Los iconos AUTUM se construyen con trazo de 1.2px en una cuadrícula de 24×24. Estilo lineal con terminaciones redondeadas. Solo en oro sobre negro o negro sobre blanco.</p>
+
+  <div class="icon-grid">
+
+    <!-- Car icon -->
+    <div class="icon-cell">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5,13 L6.5,8.5 Q7.5,6 9,6 L15,6 Q16.5,6 17.5,8.5 L19,13"/><rect x="3" y="13" width="18" height="5" rx="1.5"/><circle cx="7.5" cy="18.5" r="1.5"/><circle cx="16.5" cy="18.5" r="1.5"/><line x1="9" y1="10" x2="15" y2="10"/>
+      </svg>
+      <span class="icon-name">Vehículo</span>
+    </div>
+
+    <!-- Clock icon -->
+    <div class="icon-cell">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="9"/><polyline points="12,7 12,12 16,14"/>
+      </svg>
+      <span class="icon-name">Horario</span>
+    </div>
+
+    <!-- Location icon -->
+    <div class="icon-cell">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
+      </svg>
+      <span class="icon-name">Ubicación</span>
+    </div>
+
+    <!-- Diamond icon -->
+    <div class="icon-cell">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12,3 21,12 12,21 3,12"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="21"/>
+      </svg>
+      <span class="icon-name">Premium</span>
+    </div>
+
+    <!-- Shield icon -->
+    <div class="icon-cell">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <span class="icon-name">Seguridad</span>
+    </div>
+
+    <!-- Star icon -->
+    <div class="icon-cell">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+      </svg>
+      <span class="icon-name">Premium</span>
+    </div>
+
+    <!-- Plane icon -->
+    <div class="icon-cell">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2v0A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/>
+      </svg>
+      <span class="icon-name">Aeropuerto</span>
+    </div>
+
+    <!-- WiFi icon -->
+    <div class="icon-cell">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round">
+        <path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="#c9a84c"/>
+      </svg>
+      <span class="icon-name">Conectividad</span>
+    </div>
+
+    <!-- Champagne icon -->
+    <div class="icon-cell">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 22h8"/><path d="M12 11v11"/><path d="M17.5 5a5 5 0 0 1-11 0L5 3h14z"/>
+        <path d="M18 3c.5 1.5.5 3 0 4.5"/>
+      </svg>
+      <span class="icon-name">Minibar</span>
+    </div>
+
+    <!-- Person icon -->
+    <div class="icon-cell">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span class="icon-name">Pasajero</span>
+    </div>
+
+    <!-- Calendar icon -->
+    <div class="icon-cell">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <span class="icon-name">Reservación</span>
+    </div>
+
+    <!-- Crown icon -->
+    <div class="icon-cell">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7z"/><line x1="5" y1="20" x2="19" y2="20"/>
+      </svg>
+      <span class="icon-name">VIP</span>
+    </div>
+
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══ 06 · PATRONES ══ -->
+<section class="pg" style="background:var(--K)">
+  <div class="pg-num">06</div>
+  <div class="pg-eye">06 — Patrones & Texturas</div>
+  <h2 class="pg-title">El fondo<br><em>de la marca</em></h2>
+  <div class="pg-rule"></div>
+  <p class="pg-desc">Los patrones de AUTUM se construyen a partir de los elementos del logotipo: el rombo, la línea diagonal y la retícula geométrica. Siempre en oro sobre negro, usados con moderación.</p>
+
+  <div class="pattern-showcase">
+
+    <!-- Pattern 1: Diamond grid -->
+    <div class="pat-cell">
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="pt1" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <polygon points="20,4 36,20 20,36 4,20" stroke="#c9a84c" stroke-width=".5" fill="none" opacity=".4"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#pt1)"/>
+        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="'Raleway',sans-serif" font-size="8" letter-spacing="4" fill="rgba(201,168,76,.35)">PATRÓN ROMBOS</text>
+      </svg>
+    </div>
+
+    <!-- Pattern 2: Lines diagonal -->
+    <div class="pat-cell">
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="pt2" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+            <line x1="0" y1="0" x2="0" y2="20" stroke="#c9a84c" stroke-width=".4" opacity=".3"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#pt2)"/>
+        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="'Raleway',sans-serif" font-size="8" letter-spacing="4" fill="rgba(201,168,76,.4)">PATRÓN DIAGONAL</text>
+      </svg>
+    </div>
+
+    <!-- Pattern 3: Crosshatch fine -->
+    <div class="pat-cell">
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="pt3" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+            <circle cx="15" cy="15" r=".8" fill="#c9a84c" opacity=".5"/>
+            <line x1="15" y1="0" x2="15" y2="30" stroke="#c9a84c" stroke-width=".3" opacity=".15"/>
+            <line x1="0" y1="15" x2="30" y2="15" stroke="#c9a84c" stroke-width=".3" opacity=".15"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#pt3)"/>
+        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="'Raleway',sans-serif" font-size="8" letter-spacing="4" fill="rgba(201,168,76,.4)">PATRÓN PUNTOS</text>
+      </svg>
+    </div>
+
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══ 07 · APLICACIONES ══ -->
+<section class="pg" id="aplicaciones" style="background:var(--K1)">
+  <div class="pg-num">07</div>
+  <div class="pg-eye">07 — Aplicaciones de Marca</div>
+  <h2 class="pg-title">La identidad<br><em>en contexto</em></h2>
+  <div class="pg-rule"></div>
+  <p class="pg-desc">La marca AUTUM debe manifestarse con coherencia en cada punto de contacto. Desde la tarjeta de presentación hasta el sobre y el membrete, cada pieza comunica el mismo estándar de excelencia.</p>
+
+  <!-- BUSINESS CARD -->
+  <div style="margin-bottom:8px;"><div class="pg-eye" style="margin-bottom:20px;">Tarjeta de Presentación</div></div>
+  <div class="bc-wrap">
+
+    <!-- Front -->
+    <div class="bc">
+      <div class="bc-front">
+        <div>
+          <div class="bc-logo">AUT<span>U</span>M</div>
+          <div class="bc-rule"></div>
+        </div>
+        <div>
+          <div class="bc-name">Carlos Méndez</div>
+          <div class="bc-role">Director de Operaciones</div>
+        </div>
+        <div class="bc-contact">
+          +52 (55) 0000-0000<br>
+          <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e4878596888b97a48591909189ca878b89">[email&#160;protected]</a><br>
+          autum.com
+        </div>
+      </div>
+    </div>
+
+    <!-- Back -->
+    <div class="bc-back-wrap">
+      <div class="bc-back">
+        <!-- Diamond pattern overlay -->
+        <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.15;" xmlns="http://www.w3.org/2000/svg">
+          <defs><pattern id="bcp" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+            <polygon points="15,3 27,15 15,27 3,15" stroke="#000" stroke-width=".5" fill="none"/>
+          </pattern></defs>
+          <rect width="100%" height="100%" fill="url(#bcp)"/>
+        </svg>
+        <div class="bc-back-logo">
+          <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="40,6 72,40 40,74 8,40" stroke="rgba(0,0,0,.35)" stroke-width="1" fill="none"/>
+            <polygon points="40,16 62,40 40,64 18,40" stroke="rgba(0,0,0,.2)" stroke-width=".6" fill="none"/>
+            <text x="40" y="48" text-anchor="middle" font-family="'Playfair Display',serif" font-size="24" font-weight="400" fill="rgba(0,0,0,.7)">A</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <br>
+
+  <!-- LETTERHEAD -->
+  <div style="margin-bottom:20px;"><div class="pg-eye">Membrete Oficial</div></div>
+  <div class="lh-preview">
+    <div class="lh-header">
+      <div>
+        <div class="lh-logo-dark">AUT<span>U</span>M</div>
+        <div style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(0,0,0,.35);margin-top:4px;">Movilidad Ejecutiva</div>
+      </div>
+      <div class="lh-contact-dark">
+        +52 (55) 0000-0000<br>
+        <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="37455244524541564477564243425a1954585a">[email&#160;protected]</a><br>
+        autum.com<br>
+        Ciudad de México
+      </div>
+    </div>
+    <div class="lh-gold-line"></div>
+    <div class="lh-body">
+      <div style="margin-bottom:24px;">
+        <div style="font-size:.65rem;color:rgba(0,0,0,.3);letter-spacing:.1em;">Ciudad de México, 15 de diciembre de 2024</div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:.78rem;font-weight:400;color:rgba(0,0,0,.7);margin-bottom:4px;">Estimado Sr. Rodríguez,</div>
+      </div>
+      <p style="margin-bottom:16px;">Es un placer confirmar su reservación de servicio ejecutivo AUTUM para el próximo 18 de diciembre. Su vehículo asignado es un Mercedes-Benz S 580 L con conductor certificado.</p>
+      <p style="margin-bottom:16px;opacity:.6;">El servicio iniciará a las 08:00 hrs desde su domicilio en Polanco, con traslado al Aeropuerto Internacional. Nuestro conductor estará presente 15 minutos antes del horario acordado.</p>
+      <p style="opacity:.5;">Quedamos a su disposición para cualquier ajuste o solicitud especial. En AUTUM, su comodidad es nuestra razón de ser.</p>
+      <br>
+      <div style="font-size:.75rem;color:rgba(0,0,0,.5);">
+        Atentamente,<br>
+        <span style="font-family:var(--FD);font-size:.95rem;font-weight:400;color:rgba(0,0,0,.7);">Carlos Méndez</span><br>
+        <span style="font-size:.6rem;letter-spacing:.2em;color:#a8832a;text-transform:uppercase;">Director de Operaciones · AUTUM</span>
+      </div>
+    </div>
+    <div class="lh-footer"></div>
+  </div>
+
+  <br>
+
+  <!-- ENVELOPE -->
+  <div style="margin-bottom:20px;"><div class="pg-eye">Sobre Corporativo</div></div>
+  <div class="env-wrap">
+    <div class="env">
+      <div class="env-gold-strip"></div>
+      <!-- Flap -->
+      <div class="env-logo">
+        <div style="font-family:var(--FD);font-size:.95rem;letter-spacing:.4em;color:var(--K);opacity:.5;">AUT<span style="color:var(--G2)">U</span>M</div>
+        <div style="font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(0,0,0,.3);">Movilidad Ejecutiva</div>
+      </div>
+      <div class="env-address">
+        <div style="font-size:.6rem;letter-spacing:.1em;color:rgba(0,0,0,.4);line-height:1.8;">
+          Sr. Roberto Jiménez<br>
+          Av. Presidente Masaryk 61<br>
+          Polanco, CDMX 11550
+        </div>
+      </div>
+      <div class="env-stamp">
+        <svg width="38" height="50" viewBox="0 0 38 50" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="19,4 34,19 19,34 4,19" stroke="#a8832a" stroke-width=".8" fill="none" opacity=".4"/>
+          <text x="19" y="23" text-anchor="middle" font-family="'Playfair Display',serif" font-size="12" font-weight="400" fill="#a8832a" opacity=".6">A</text>
+          <text x="19" y="45" text-anchor="middle" font-family="'Raleway',sans-serif" font-size="5" letter-spacing="2" fill="rgba(0,0,0,.3)">MX · 2024</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══ 08 · MOCKUP DIGITAL ══ -->
+<section class="pg" style="background:var(--K);">
+  <div class="pg-num">08</div>
+  <div class="pg-eye">08 — Aplicaciones Digitales</div>
+  <h2 class="pg-title">La marca<br><em>en pantalla</em></h2>
+  <div class="pg-rule"></div>
+  <p class="pg-desc">App icon, splash screen y notificación push. La identidad AUTUM debe mantenerse coherente en todos los entornos digitales.</p>
+
+  <div class="mockups-row">
+
+    <!-- App Icon -->
+    <div class="mockup-phone">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:20px;">
+        <div style="font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;">App Icon</div>
+        <!-- Large app icon -->
+        <div style="width:120px;height:120px;background:var(--K);border-radius:26px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(201,168,76,.2);box-shadow:0 20px 60px rgba(0,0,0,.8);">
+          <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="40,8 70,40 40,72 10,40" stroke="#c9a84c" stroke-width="1.2" fill="none"/>
+            <polygon points="40,18 60,40 40,62 20,40" stroke="rgba(201,168,76,.3)" stroke-width=".6" fill="none"/>
+            <text x="40" y="48" text-anchor="middle" font-family="'Playfair Display',serif" font-size="26" font-weight="400" fill="#c9a84c">A</text>
+          </svg>
+        </div>
+        <!-- Small sizes -->
+        <div style="display:flex;gap:12px;align-items:flex-end;">
+          <div style="width:72px;height:72px;background:var(--K);border-radius:16px;display:flex;align-items:center;justify-content:center;border:1px solid var(--K3);">
+            <svg width="48" height="48" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="40,8 70,40 40,72 10,40" stroke="#c9a84c" stroke-width="1.5" fill="none"/>
+              <text x="40" y="48" text-anchor="middle" font-family="'Playfair Display',serif" font-size="26" fill="#c9a84c">A</text>
+            </svg>
+          </div>
+          <div style="width:48px;height:48px;background:var(--K);border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid var(--K3);">
+            <svg width="30" height="30" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="40,8 70,40 40,72 10,40" stroke="#c9a84c" stroke-width="2" fill="none"/>
+              <text x="40" y="50" text-anchor="middle" font-family="'Playfair Display',serif" font-size="28" fill="#c9a84c">A</text>
+            </svg>
+          </div>
+          <div style="width:28px;height:28px;background:var(--G);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+            <svg width="18" height="18" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+              <text x="40" y="54" text-anchor="middle" font-family="'Playfair Display',serif" font-size="40" fill="#000">A</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phone mockup: Splash -->
+    <div class="mockup-phone">
+      <div class="phone-frame">
+        <div class="ph-status"><div class="ph-notch"></div></div>
+        <div class="ph-content" style="background:var(--K);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:20px;">
+          <!-- Logo on splash -->
+          <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="50,8 90,50 50,92 10,50" stroke="#c9a84c" stroke-width="1" fill="none"/>
+            <polygon points="50,20 76,50 50,80 24,50" stroke="rgba(201,168,76,.25)" stroke-width=".5" fill="none"/>
+            <text x="50" y="60" text-anchor="middle" font-family="'Playfair Display',serif" font-size="30" font-weight="400" fill="#c9a84c">A</text>
+          </svg>
+          <div style="font-family:var(--FD);font-size:1rem;letter-spacing:.4em;color:var(--W);text-transform:uppercase;">AUTUM</div>
+          <div style="width:24px;height:1px;background:var(--G);"></div>
+          <div style="font-size:.45rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(201,168,76,.5);">MOVILIDAD EJECUTIVA</div>
+          <!-- Loading bar -->
+          <div style="position:absolute;bottom:32px;left:50%;transform:translateX(-50%);width:60px;height:1px;background:var(--K3);">
+            <div style="width:60%;height:100%;background:var(--G);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phone mockup: Notification -->
+    <div class="mockup-phone">
+      <div class="phone-frame">
+        <div class="ph-status"><div class="ph-notch"></div></div>
+        <div class="ph-content" style="background:#1a1a1a;padding:12px;">
+          <!-- Notification card -->
+          <div style="background:var(--K);border-radius:10px;padding:14px;border:1px solid var(--K3);margin-top:8px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <div style="width:24px;height:24px;background:var(--G);border-radius:5px;display:flex;align-items:center;justify-content:center;">
+                <span style="font-family:var(--FD);font-size:.65rem;font-weight:600;color:var(--K)">A</span>
+              </div>
+              <div>
+                <div style="font-size:.55rem;font-weight:500;color:var(--W);letter-spacing:.05em;">AUTUM</div>
+                <div style="font-size:.45rem;color:rgba(255,255,255,.3);">hace un momento</div>
+              </div>
+            </div>
+            <div style="font-size:.6rem;font-weight:500;color:var(--W);margin-bottom:4px;">Su conductor ha llegado</div>
+            <div style="font-size:.55rem;color:rgba(255,255,255,.4);line-height:1.5;">Carlos está esperando en la entrada. Mercedes-Benz S 580 · Placa XXX-000</div>
+          </div>
+          <!-- Second notification -->
+          <div style="background:var(--K2);border-radius:10px;padding:14px;border:1px solid var(--K3);margin-top:6px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <div style="width:24px;height:24px;background:var(--K3);border-radius:5px;display:flex;align-items:center;justify-content:center;border:1px solid var(--Gb);">
+                <span style="font-family:var(--FD);font-size:.65rem;color:var(--G)">A</span>
+              </div>
+              <div>
+                <div style="font-size:.55rem;font-weight:500;color:var(--W);letter-spacing:.05em;">AUTUM</div>
+                <div style="font-size:.45rem;color:rgba(255,255,255,.3);">Confirmación de reserva</div>
+              </div>
+            </div>
+            <div style="font-size:.6rem;font-weight:500;color:var(--G);margin-bottom:3px;">REF: AUT-2024-48291</div>
+            <div style="font-size:.5rem;color:rgba(255,255,255,.35);line-height:1.5;">Mañana 08:00 hrs · Polanco → AICM T2</div>
+          </div>
+          <!-- Mini UI elements -->
+          <div style="margin-top:14px;padding:12px;background:var(--K);border-radius:8px;border:1px solid var(--K3);">
+            <div style="font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--G);margin-bottom:8px;">Mi próximo viaje</div>
+            <div style="font-size:.6rem;color:var(--W);margin-bottom:4px;">Mercedes S 580 L</div>
+            <div style="font-size:.52rem;color:rgba(255,255,255,.35);">Lunes · 08:00 · Polanco</div>
+            <div style="margin-top:8px;background:var(--G);border-radius:4px;padding:5px 10px;display:inline-block;">
+              <span style="font-size:.48rem;letter-spacing:.15em;text-transform:uppercase;color:var(--K);font-weight:500;">Ver detalles</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══ 09 · SEÑALÉTICA ══ -->
+<section class="pg" style="background:var(--K1);">
+  <div class="pg-num">09</div>
+  <div class="pg-eye">09 — Señalética y Uniformes</div>
+  <h2 class="pg-title">Presencia<br><em>en el mundo real</em></h2>
+  <div class="pg-rule"></div>
+  <p class="pg-desc">Los elementos de señalética, placas vehiculares y uniformes extienden la identidad AUTUM más allá de la pantalla, creando un ambiente de lujo tangible en cada punto de contacto.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;">
+
+    <!-- Vehicle plate/sticker -->
+    <div style="padding:50px 40px;background:var(--K2);border:1px solid var(--K3);display:flex;flex-direction:column;align-items:center;gap:20px;">
+      <div style="font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px;">Placa Vehicular</div>
+      <div style="background:var(--K);border:1px solid rgba(201,168,76,.25);padding:16px 30px;width:220px;text-align:center;position:relative;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--G),transparent);"></div>
+        <div style="font-family:var(--FD);font-size:1.1rem;letter-spacing:.4em;color:var(--W);margin-bottom:4px;">AUTUM</div>
+        <div style="width:100%;height:1px;background:rgba(201,168,76,.3);margin:6px 0;"></div>
+        <div style="font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(201,168,76,.55);">MOVILIDAD EJECUTIVA</div>
+      </div>
+    </div>
+
+    <!-- Reception sign -->
+    <div style="padding:50px 40px;background:var(--K2);border:1px solid var(--K3);display:flex;flex-direction:column;align-items:center;gap:20px;">
+      <div style="font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px;">Letrero de Recepción</div>
+      <div style="background:var(--K);border:1px solid var(--K4);padding:28px 40px;width:260px;text-align:center;position:relative;">
+        <div style="position:absolute;top:0;left:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--G),var(--G2));"></div>
+        <svg width="40" height="40" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:10px;">
+          <polygon points="40,6 72,40 40,74 8,40" stroke="#c9a84c" stroke-width="1.2" fill="none"/>
+          <text x="40" y="48" text-anchor="middle" font-family="'Playfair Display',serif" font-size="24" fill="#c9a84c">A</text>
+        </svg>
+        <div style="font-family:var(--FD);font-size:1.1rem;letter-spacing:.3em;color:var(--W);">AUTUM</div>
+        <div style="width:32px;height:1px;background:var(--G);margin:8px auto;"></div>
+        <div style="font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(201,168,76,.5);">SR. RODRÍGUEZ</div>
+      </div>
+    </div>
+
+    <!-- Uniform pin/badge -->
+    <div style="padding:50px 40px;background:var(--K2);border:1px solid var(--K3);display:flex;flex-direction:column;align-items:center;gap:20px;">
+      <div style="font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px;">Pin de Uniforme</div>
+      <!-- Gold pin -->
+      <div style="background:var(--G);width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(201,168,76,.3);">
+        <svg width="52" height="52" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="40,8 68,40 40,72 12,40" stroke="rgba(0,0,0,.3)" stroke-width="1" fill="none"/>
+          <text x="40" y="48" text-anchor="middle" font-family="'Playfair Display',serif" font-size="26" font-weight="500" fill="rgba(0,0,0,.6)">A</text>
+        </svg>
+      </div>
+      <div style="background:var(--G);padding:8px 20px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(201,168,76,.2);">
+        <span style="font-family:var(--FD);font-size:.75rem;letter-spacing:.35em;color:var(--K);text-transform:uppercase;">AUTUM</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══ 10 · VOZ DE MARCA ══ -->
+<section class="pg" id="voz" style="background:var(--K)">
+  <div class="pg-num">10</div>
+  <div class="pg-eye">10 — Voz y Personalidad</div>
+  <h2 class="pg-title">Cómo habla<br><em>AUTUM</em></h2>
+  <div class="pg-rule"></div>
+  <p class="pg-desc">La voz de AUTUM es serena, precisa y evocadora. Nunca usa exclamaciones. Nunca promete lo que no cumple. Nunca es informal ni excesiva. Habla como quien sabe que no necesita convencer.</p>
+
+  <div class="tov-grid">
+    <div class="tov-card"><div class="tov-num">01</div><div class="tov-title">Serena</div><p class="tov-text">No urge, no presiona. Comunica con la calma de quien tiene todo bajo control. El lujo no necesita gritar.</p><div class="tov-ex">"Nos encargamos de que su llegada sea impecable."</div></div>
+    <div class="tov-card"><div class="tov-num">02</div><div class="tov-title">Precisa</div><p class="tov-text">Cada palabra tiene un lugar. Evita el relleno y los adjetivos vacíos. La elegancia es también lingüística.</p><div class="tov-ex">"Confirmación recibida. Su conductor llegará a las 08:00."</div></div>
+    <div class="tov-card"><div class="tov-num">03</div><div class="tov-title">Evocadora</div><p class="tov-text">No describe, sugiere. No explica, transporta. Cada mensaje debe dejar una imagen mental de refinamiento.</p><div class="tov-ex">"El arte de llegar con clase."</div></div>
+    <div class="tov-card"><div class="tov-num">04</div><div class="tov-title">Discreta</div><p class="tov-text">La confidencialidad es un valor de marca. AUTUM no presume sus clientes ni hace alarde de lo que ya es evidente.</p><div class="tov-ex">"Nuestra promesa empieza antes de que nos lo pida."</div></div>
+    <div class="tov-card"><div class="tov-num">05</div><div class="tov-title">Personal</div><p class="tov-text">Cada interacción se siente única. Usa el nombre del pasajero. Recuerda sus preferencias. No es masivo, es íntimo.</p><div class="tov-ex">"Bienvenido, Sr. Méndez. Su S 580 L le espera."</div></div>
+    <div class="tov-card"><div class="tov-num">06</div><div class="tov-title">Atemporal</div><p class="tov-text">Nunca usa jerga del momento ni referencias pasajeras. AUTUM habla en un idioma que seguirá siendo relevante en 20 años.</p><div class="tov-ex">"La excelencia no caduca."</div></div>
+  </div>
+</section>
+
+<div class="sec-divider"></div>
+
+<!-- ══ 11 · DO & DON'T ══ -->
+<section class="pg" style="background:var(--K1);">
+  <div class="pg-num">11</div>
+  <div class="pg-eye">11 — Uso Correcto</div>
+  <h2 class="pg-title">Lo que está<br><em>permitido</em></h2>
+  <div class="pg-rule"></div>
+  <p class="pg-desc">Las reglas de uso protegen la integridad de la marca y garantizan que AUTUM sea siempre reconocible, coherente y digna de sus valores.</p>
+
+  <div class="dd-grid">
+    <div class="dd-col do">
+      <div class="dd-head"><div class="dd-dot g"></div><div class="dd-headtxt" style="color:var(--G);">Correcto · Sí</div></div>
+      <div class="dd-item"><div class="dd-icon">✓</div><div class="dd-text">Usar el logotipo en negro, blanco o dorado únicamente</div></div>
+      <div class="dd-item"><div class="dd-icon">✓</div><div class="dd-text">Respetar el espacio de protección mínimo alrededor del logo (1× la altura de la "A")</div></div>
+      <div class="dd-item"><div class="dd-icon">✓</div><div class="dd-text">Usar Playfair Display para titulares y Raleway para texto de apoyo</div></div>
+      <div class="dd-item"><div class="dd-icon">✓</div><div class="dd-text">Aplicar el símbolo monograma de forma independiente cuando el espacio es reducido</div></div>
+      <div class="dd-item"><div class="dd-icon">✓</div><div class="dd-text">Mantener el espaciado de letras extendido (.4em–.5em) en toda comunicación de marca</div></div>
+      <div class="dd-item"><div class="dd-icon">✓</div><div class="dd-text">Sobre fondos fotográficos, usar siempre la versión blanca del logo con sombra sutil</div></div>
+    </div>
+    <div class="dd-col dont">
+      <div class="dd-head"><div class="dd-dot r"></div><div class="dd-headtxt" style="color:#888;">Incorrecto · No</div></div>
+      <div class="dd-item"><div class="dd-icon" style="opacity:.4;">✗</div><div class="dd-text">Usar colores distintos a los de la paleta oficial (sin azules, verdes, rojos)</div></div>
+      <div class="dd-item"><div class="dd-icon" style="opacity:.4;">✗</div><div class="dd-text">Distorsionar, rotar, inclinar o aplicar efectos sobre el logotipo</div></div>
+      <div class="dd-item"><div class="dd-icon" style="opacity:.4;">✗</div><div class="dd-text">Usar el logotipo sobre fondos de colores vivos que no sean negro, blanco o dorado</div></div>
+      <div class="dd-item"><div class="dd-icon" style="opacity:.4;">✗</div><div class="dd-text">Reducir el logo a tamaños donde el texto quede ilegible (&lt;60px de ancho)</div></div>
+      <div class="dd-item"><div class="dd-icon" style="opacity:.4;">✗</div><div class="dd-text">Combinar el logotipo con otros elementos gráficos dentro del área de protección</div></div>
+      <div class="dd-item"><div class="dd-icon" style="opacity:.4;">✗</div><div class="dd-text">Usar tipografías distintas a las definidas en el sistema (especialmente sans-serif genéricas)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CIERRE ══ -->
+<section class="pg" style="background:var(--K);text-align:center;padding:120px 60px;">
+  <div style="display:inline-block;margin-bottom:40px;">
+    <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="60,10 108,60 60,110 12,60" stroke="#c9a84c" stroke-width="1.2" fill="none"/>
+      <polygon points="60,24 90,60 60,96 30,60" stroke="rgba(201,168,76,.3)" stroke-width=".6" fill="none"/>
+      <line x1="60" y1="10" x2="60" y2="110" stroke="rgba(201,168,76,.1)" stroke-width=".5"/>
+      <line x1="12" y1="60" x2="108" y2="60" stroke="rgba(201,168,76,.1)" stroke-width=".5"/>
+      <text x="60" y="72" text-anchor="middle" font-family="'Playfair Display',serif" font-size="36" font-weight="400" fill="#c9a84c">A</text>
+    </svg>
+  </div>
+  <div style="font-family:var(--FD);font-size:clamp(2rem,4vw,4rem);font-weight:300;color:var(--W);margin-bottom:16px;">AUT<span style="color:var(--G)">U</span>M</div>
+  <div style="width:60px;height:1px;background:var(--G);margin:0 auto 20px;"></div>
+  <div style="font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:rgba(201,168,76,.5);margin-bottom:48px;">Brand Identity System · 2024</div>
+  <div style="font-family:var(--FD);font-size:1.1rem;font-weight:300;font-style:italic;color:rgba(255,255,255,.3);max-width:480px;margin:0 auto;line-height:1.8;">"Una marca de lujo no se construye con detalles. Se construye cuando ningún detalle falta."</div>
+</section>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const c1=document.getElementById('c1'),c2=document.getElementById('c2');
+document.addEventListener('mousemove',e=>{
+  c1.style.left=e.clientX+'px';c1.style.top=e.clientY+'px';
+  setTimeout(()=>{c2.style.left=e.clientX+'px';c2.style.top=e.clientY+'px';},90);
+});
+
+// Intersection animation
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+ 

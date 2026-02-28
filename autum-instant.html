@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AUTUM — Solicitud Instantánea</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Raleway:wght@100;200;300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --K:#000; --K1:#0a0a0a; --K2:#111; --K3:#1a1a1a; --K4:#252525; --K5:#2e2e2e;
+  --W:#fff; --W1:#f8f4ee; --W2:#ede8df;
+  --G:#c9a84c; --G1:#e8c96a; --G2:#a8832a; --G3:#f5e4b0;
+  --Go:rgba(201,168,76,.1); --Gb:rgba(201,168,76,.25);
+  --FD:'Playfair Display',serif;
+  --FC:'Cormorant Garamond',serif;
+  --FB:'Raleway',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body {
+  background:#050505;
+  font-family:var(--FB);
+  font-weight:300;
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh;
+  overflow:hidden;
+}
+
+/* ── PHONE ── */
+.phone {
+  width:390px; height:844px;
+  background:var(--K1);
+  border-radius:48px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:
+    0 0 0 1px rgba(201,168,76,.18),
+    0 0 0 2px #000,
+    0 60px 140px rgba(0,0,0,.95),
+    0 0 80px rgba(201,168,76,.03);
+}
+.notch {
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:120px; height:34px;
+  background:var(--K); border-radius:0 0 22px 22px; z-index:1000;
+}
+
+/* ── SCREENS ── */
+.screen {
+  position:absolute; inset:0;
+  opacity:0; pointer-events:none;
+  transition:opacity .4s ease;
+  display:flex; flex-direction:column;
+}
+.screen.active { opacity:1; pointer-events:all; }
+
+/* ══════════════════════════════════════════
+   SCREEN 1 · MAPA PRINCIPAL + BOTÓN AHORA
+══════════════════════════════════════════ */
+#s-map {
+  background:var(--K);
+  position:relative;
+}
+
+/* Live map */
+.map-full {
+  position:absolute; inset:0;
+  overflow:hidden;
+}
+.map-grid-bg {
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(201,168,76,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,.035) 1px, transparent 1px);
+  background-size:44px 44px;
+}
+.map-roads {
+  position:absolute; inset:0;
+}
+
+/* Floating drivers on map */
+.driver-pin {
+  position:absolute;
+  display:flex; flex-direction:column; align-items:center;
+  cursor:pointer;
+  animation:driverFloat 3s ease-in-out infinite;
+}
+.driver-pin:nth-child(2) { animation-delay:.8s; }
+.driver-pin:nth-child(3) { animation-delay:1.6s; }
+.driver-pin:nth-child(4) { animation-delay:2.2s; }
+.driver-pin:nth-child(5) { animation-delay:.4s; }
+
+@keyframes driverFloat {
+  0%,100% { transform:translateY(0); }
+  50%      { transform:translateY(-4px); }
+}
+
+.dpin-icon {
+  width:38px; height:38px;
+  background:var(--K2);
+  border:1.5px solid var(--G);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 20px rgba(201,168,76,.25), 0 0 0 6px rgba(201,168,76,.06);
+  position:relative;
+}
+.dpin-icon.nearby {
+  border-color:var(--G1);
+  box-shadow:0 4px 24px rgba(201,168,76,.4), 0 0 0 8px rgba(201,168,76,.1);
+}
+.dpin-pulse {
+  position:absolute; inset:-8px;
+  border:1px solid rgba(201,168,76,.3);
+  border-radius:50%;
+  animation:pinPulse 2s ease-out infinite;
+}
+@keyframes pinPulse {
+  0%   { transform:scale(1); opacity:.6; }
+  100% { transform:scale(1.8); opacity:0; }
+}
+.dpin-label {
+  margin-top:4px;
+  font-size:.42rem; letter-spacing:.18em; text-transform:uppercase;
+  color:rgba(201,168,76,.6);
+  background:rgba(0,0,0,.7);
+  padding:2px 5px;
+  white-space:nowrap;
+}
+.dpin-eta {
+  font-size:.45rem; letter-spacing:.1em;
+  color:rgba(255,255,255,.35);
+  background:rgba(0,0,0,.6);
+  padding:1px 5px;
+}
+
+/* User location pulse */
+.user-loc {
+  position:absolute;
+  top:44%; left:50%;
+  transform:translate(-50%,-50%);
+}
+.user-ring1 {
+  position:absolute;
+  width:60px; height:60px;
+  border:1px solid rgba(201,168,76,.2);
+  border-radius:50%;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  animation:uPulse 2.5s ease-out infinite;
+}
+.user-ring2 {
+  position:absolute;
+  width:36px; height:36px;
+  border:1px solid rgba(201,168,76,.3);
+  border-radius:50%;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  animation:uPulse 2.5s ease-out infinite .5s;
+}
+@keyframes uPulse {
+  0%   { transform:translate(-50%,-50%) scale(1); opacity:.6; }
+  100% { transform:translate(-50%,-50%) scale(2); opacity:0; }
+}
+.user-dot {
+  width:14px; height:14px;
+  background:var(--G);
+  border-radius:50%;
+  border:2px solid var(--K1);
+  box-shadow:0 0 16px rgba(201,168,76,.6);
+  position:relative; z-index:2;
+}
+
+/* MAP OVERLAY gradient bottom */
+.map-overlay-bottom {
+  position:absolute; bottom:0; left:0; right:0; height:340px;
+  background:linear-gradient(to top, rgba(0,0,0,.98) 0%, rgba(0,0,0,.7) 40%, transparent 100%);
+  pointer-events:none;
+}
+
+/* TOP bar */
+.map-topbar {
+  position:relative; z-index:10;
+  padding:44px 22px 0;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.map-logo {
+  font-family:var(--FD); font-size:1rem; letter-spacing:.4em; color:var(--W);
+}
+.map-logo span { color:var(--G); }
+.map-top-right { display:flex; gap:8px; }
+.map-ico-btn {
+  width:36px; height:36px;
+  background:rgba(0,0,0,.6); backdrop-filter:blur(12px);
+  border:1px solid rgba(201,168,76,.2);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+}
+
+/* Nearby count badge */
+.nearby-badge {
+  position:absolute; z-index:10;
+  top:112px; left:22px;
+  background:rgba(0,0,0,.75); backdrop-filter:blur(12px);
+  border:1px solid rgba(201,168,76,.25);
+  padding:8px 14px;
+  display:flex; align-items:center; gap:8px;
+}
+.nearby-dot { width:6px; height:6px; border-radius:50%; background:var(--G); animation:nblink 1.5s ease-in-out infinite; }
+@keyframes nblink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+.nearby-text { font-size:.52rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+.nearby-num { font-family:var(--FD); font-size:.9rem; color:var(--G); }
+
+/* BOTTOM SHEET */
+.bottom-sheet {
+  position:absolute; bottom:0; left:0; right:0; z-index:20;
+  background:var(--K1);
+  border-top:1px solid rgba(201,168,76,.15);
+  padding:20px 22px 36px;
+}
+.sheet-handle {
+  width:36px; height:3px; background:var(--K4); border-radius:2px;
+  margin:0 auto 18px;
+}
+.sheet-location {
+  display:flex; align-items:center; gap:10px;
+  background:var(--K2); border:1px solid var(--K3);
+  padding:12px 14px; margin-bottom:14px;
+  cursor:pointer;
+}
+.loc-dot-g { width:8px; height:8px; border-radius:50%; background:var(--G); flex-shrink:0; }
+.loc-text { font-size:.65rem; color:rgba(255,255,255,.5); flex:1; }
+.loc-text span { color:var(--W1); }
+.loc-edit { font-size:.5rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(201,168,76,.5); }
+
+/* Service type row */
+.svc-row {
+  display:flex; gap:8px; margin-bottom:18px;
+}
+.svc-chip {
+  flex:1; background:var(--K2); border:1px solid var(--K3);
+  padding:10px 6px; text-align:center; cursor:pointer;
+  transition:all .2s;
+}
+.svc-chip.on { border-color:var(--G); background:rgba(201,168,76,.07); }
+.svc-chip-name {
+  font-size:.55rem; letter-spacing:.12em; text-transform:uppercase;
+  color:rgba(255,255,255,.35); margin-bottom:3px;
+}
+.svc-chip.on .svc-chip-name { color:var(--G); }
+.svc-chip-price {
+  font-family:var(--FD); font-size:.8rem; color:rgba(255,255,255,.4);
+}
+.svc-chip.on .svc-chip-price { color:var(--W1); }
+.svc-chip-eta {
+  font-size:.45rem; letter-spacing:.1em; color:rgba(255,255,255,.2);
+}
+.svc-chip.on .svc-chip-eta { color:rgba(201,168,76,.5); }
+
+/* CTA AHORA */
+.cta-ahora {
+  width:100%; background:var(--G); border:none;
+  padding:17px;
+  font-family:var(--FB); font-size:.65rem; letter-spacing:.4em; text-transform:uppercase;
+  color:var(--K); cursor:pointer; position:relative; overflow:hidden;
+  transition:opacity .2s;
+}
+.cta-ahora::after {
+  content:'';
+  position:absolute; top:0; left:-100%;
+  width:60%; height:100%;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+  animation:shimmer 2.5s ease-in-out infinite;
+}
+@keyframes shimmer { to { left:160%; } }
+.cta-ahora:active { transform:scale(.99); }
+
+/* ══════════════════════════════════════════
+   SCREEN 2 · BUSCANDO DRIVER (RADAR)
+══════════════════════════════════════════ */
+#s-searching {
+  background:var(--K);
+  align-items:center;
+  justify-content:center;
+}
+
+.search-content {
+  position:relative; z-index:2;
+  display:flex; flex-direction:column; align-items:center;
+  width:100%;
+  padding:0 30px;
+}
+
+/* RADAR */
+.radar-wrap {
+  position:relative;
+  width:260px; height:260px;
+  margin-bottom:40px;
+}
+.radar-bg {
+  position:absolute; inset:0;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(201,168,76,.06) 0%, transparent 70%);
+}
+
+.radar-ring {
+  position:absolute; border-radius:50%;
+  border:1px solid rgba(201,168,76,.15);
+  top:50%; left:50%; transform:translate(-50%,-50%);
+}
+.radar-ring:nth-child(1) { width:70px; height:70px; }
+.radar-ring:nth-child(2) { width:130px; height:130px; }
+.radar-ring:nth-child(3) { width:190px; height:190px; }
+.radar-ring:nth-child(4) { width:250px; height:250px; }
+
+/* Sweeping beam */
+.radar-sweep {
+  position:absolute; inset:0; border-radius:50%;
+  animation:radarSpin 2.2s linear infinite;
+  transform-origin:center;
+}
+.radar-sweep::before {
+  content:'';
+  position:absolute;
+  top:50%; left:50%;
+  width:50%; height:1px;
+  transform-origin:left center;
+  background:linear-gradient(90deg, rgba(201,168,76,.8), transparent);
+  transform:rotate(0deg);
+}
+.radar-sweep::after {
+  content:'';
+  position:absolute; inset:0; border-radius:50%;
+  background:conic-gradient(from 0deg, rgba(201,168,76,.15) 0deg, transparent 70deg);
+}
+@keyframes radarSpin { to { transform:rotate(360deg); } }
+
+/* Center crosshair */
+.radar-center {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:18px; height:18px;
+  border:1px solid var(--G); border-radius:50%;
+  background:var(--K);
+  display:flex; align-items:center; justify-content:center;
+  z-index:5;
+}
+.radar-center::before {
+  content:''; width:6px; height:6px;
+  border-radius:50%; background:var(--G);
+  box-shadow:0 0 8px rgba(201,168,76,.8);
+}
+
+/* Cross lines */
+.radar-cross-h {
+  position:absolute; top:50%; left:10%; right:10%;
+  height:1px; background:rgba(201,168,76,.08);
+}
+.radar-cross-v {
+  position:absolute; left:50%; top:10%; bottom:10%;
+  width:1px; background:rgba(201,168,76,.08);
+}
+
+/* Drivers detected on radar */
+.rdriver {
+  position:absolute;
+  display:flex; flex-direction:column; align-items:center;
+  animation:rdrAppear .4s ease both;
+}
+@keyframes rdrAppear {
+  from { opacity:0; transform:scale(0); }
+  to   { opacity:1; transform:scale(1); }
+}
+.rdriver-dot {
+  width:10px; height:10px;
+  border-radius:50%; background:var(--G);
+  box-shadow:0 0 10px rgba(201,168,76,.7);
+  animation:rdrBlink 1.5s ease-in-out infinite;
+}
+.rdriver-dot.far { background:rgba(201,168,76,.4); box-shadow:none; animation-delay:.5s; }
+.rdriver-dot.medium { background:rgba(201,168,76,.65); animation-delay:.3s; }
+@keyframes rdrBlink {
+  0%,100% { box-shadow:0 0 8px rgba(201,168,76,.6); }
+  50%      { box-shadow:0 0 16px rgba(201,168,76,1); }
+}
+.rdriver-lbl {
+  font-size:.38rem; letter-spacing:.12em; text-transform:uppercase;
+  color:rgba(201,168,76,.5); margin-top:2px; white-space:nowrap;
+}
+
+/* Distance lines from center to driver */
+.rline {
+  position:absolute;
+  top:50%; left:50%;
+  height:1px;
+  background:linear-gradient(90deg, rgba(201,168,76,.3), transparent);
+  transform-origin:left center;
+  opacity:.4;
+}
+
+/* Text below radar */
+.search-status {
+  font-family:var(--FD); font-size:1.2rem; font-weight:300;
+  color:var(--W); text-align:center; margin-bottom:8px;
+}
+.search-status em { color:var(--G); font-style:italic; }
+
+.search-sub {
+  font-size:.55rem; letter-spacing:.3em; text-transform:uppercase;
+  color:rgba(255,255,255,.25); text-align:center; margin-bottom:32px;
+}
+
+/* Drivers found list (appears after search) */
+.found-list {
+  width:100%; display:flex; flex-direction:column; gap:8px;
+  max-height:0; overflow:hidden;
+  transition:max-height .6s ease;
+}
+.found-list.visible { max-height:400px; }
+
+.found-driver {
+  background:var(--K2); border:1px solid var(--K3);
+  padding:14px 16px;
+  display:flex; align-items:center; gap:14px;
+  opacity:0; transform:translateY(10px);
+  transition:all .3s ease;
+}
+.found-driver.show { opacity:1; transform:translateY(0); }
+.found-driver.best { border-color:rgba(201,168,76,.4); background:rgba(201,168,76,.06); }
+
+.fd-avatar {
+  width:42px; height:42px; border-radius:50%;
+  background:var(--K3); border:1px solid var(--K3);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--FD); font-size:.85rem; color:var(--G);
+  flex-shrink:0;
+}
+.found-driver.best .fd-avatar { border-color:var(--G); }
+
+.fd-info { flex:1; }
+.fd-name { font-size:.7rem; color:var(--W1); margin-bottom:2px; }
+.fd-vehicle { font-size:.52rem; letter-spacing:.1em; color:rgba(255,255,255,.25); text-transform:uppercase; }
+.fd-rating {
+  display:flex; align-items:center; gap:3px;
+  font-size:.5rem; color:rgba(201,168,76,.6); margin-top:2px;
+}
+
+.fd-right { text-align:right; flex-shrink:0; }
+.fd-eta {
+  font-family:var(--FD); font-size:1.1rem; color:var(--G);
+}
+.fd-eta-unit { font-size:.45rem; letter-spacing:.15em; color:rgba(255,255,255,.2); text-transform:uppercase; }
+.fd-dist { font-size:.5rem; color:rgba(255,255,255,.2); margin-top:2px; }
+
+.fd-best-badge {
+  position:absolute; right:14px; top:10px;
+  font-size:.4rem; letter-spacing:.25em; text-transform:uppercase;
+  color:var(--K); background:var(--G); padding:3px 6px;
+}
+
+/* Cancel + confirm */
+.search-actions {
+  display:flex; gap:10px; width:100%; margin-top:14px;
+}
+.btn-cancel {
+  flex:1; background:none; border:1px solid var(--K3);
+  padding:14px; font-family:var(--FB);
+  font-size:.55rem; letter-spacing:.3em; text-transform:uppercase;
+  color:rgba(255,255,255,.3); cursor:pointer; transition:border-color .2s;
+}
+.btn-cancel:hover { border-color:rgba(255,255,255,.2); }
+.btn-confirm {
+  flex:2; background:var(--G); border:none;
+  padding:14px; font-family:var(--FB);
+  font-size:.58rem; letter-spacing:.3em; text-transform:uppercase;
+  color:var(--K); cursor:pointer; transition:opacity .2s;
+  display:none;
+}
+.btn-confirm.visible { display:block; }
+.btn-confirm:hover { opacity:.88; }
+
+/* ══════════════════════════════════════════
+   SCREEN 3 · DRIVER ASIGNADO
+══════════════════════════════════════════ */
+#s-assigned {
+  background:var(--K1);
+}
+
+.assigned-map {
+  height:300px; background:var(--K);
+  position:relative; overflow:hidden; flex-shrink:0;
+}
+.amap-grid {
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(201,168,76,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,.03) 1px, transparent 1px);
+  background-size:38px 38px;
+}
+.amap-route-svg {
+  position:absolute; inset:0; width:100%; height:100%;
+}
+/* Moving car on assigned map */
+.amap-car {
+  position:absolute;
+  top:58%; left:32%;
+  animation:carApproach 4s ease-in-out infinite alternate;
+}
+@keyframes carApproach {
+  from { left:28%; top:62%; }
+  to   { left:45%; top:50%; }
+}
+/* User pin */
+.amap-user {
+  position:absolute; top:46%; left:50%;
+  transform:translate(-50%,-50%);
+}
+.amap-user-ring {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:40px; height:40px; border:1px solid rgba(201,168,76,.3); border-radius:50%;
+  animation:uPulse 2s ease-out infinite;
+}
+.amap-user-dot {
+  width:12px; height:12px; background:var(--G); border-radius:50%;
+  border:2px solid var(--K1);
+  box-shadow:0 0 14px rgba(201,168,76,.6);
+  position:relative; z-index:2;
+}
+
+/* Distance beam */
+.amap-beam {
+  position:absolute; top:50%; left:36%;
+  width:80px; height:1px;
+  background:linear-gradient(90deg, rgba(201,168,76,.5), rgba(201,168,76,.1));
+  transform-origin:left center;
+  transform:rotate(-10deg);
+  animation:beamGrow 4s ease-in-out infinite alternate;
+}
+@keyframes beamGrow {
+  from { width:60px; opacity:.4; }
+  to   { width:100px; opacity:.7; }
+}
+
+/* Driver ETA overlay on map */
+.amap-eta-badge {
+  position:absolute; top:14px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,.8); backdrop-filter:blur(12px);
+  border:1px solid rgba(201,168,76,.3);
+  padding:10px 20px;
+  display:flex; align-items:center; gap:16px;
+}
+.aeta-label { font-size:.45rem; letter-spacing:.3em; text-transform:uppercase; color:rgba(255,255,255,.3); }
+.aeta-value { font-family:var(--FD); font-size:1.5rem; color:var(--G); }
+.aeta-unit { font-size:.5rem; color:rgba(255,255,255,.2); text-transform:uppercase; letter-spacing:.15em; }
+.aeta-divider { width:1px; height:30px; background:var(--K3); }
+.aeta-dist-val { font-family:var(--FD); font-size:.9rem; color:rgba(255,255,255,.5); }
+
+/* Progress track */
+.progress-track {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 24px 0;
+  position:absolute; bottom:12px; left:0; right:0;
+}
+.pt-step {
+  display:flex; flex-direction:column; align-items:center; gap:4px; position:relative;
+}
+.pt-step::after {
+  content:'';
+  position:absolute;
+  left:100%; top:10px;
+  width:60px; height:1px;
+  background:var(--K3);
+}
+.pt-step:last-child::after { display:none; }
+.pt-step.done::after { background:rgba(201,168,76,.4); }
+.pt-dot {
+  width:20px; height:20px; border-radius:50%;
+  background:var(--K3); border:1px solid var(--K4);
+  display:flex; align-items:center; justify-content:center;
+}
+.pt-step.done .pt-dot { background:rgba(201,168,76,.15); border-color:var(--G); }
+.pt-step.active .pt-dot { background:var(--G); border-color:var(--G); animation:ptPulse 1.2s ease-in-out infinite; }
+@keyframes ptPulse {
+  0%,100% { box-shadow:0 0 0 0 rgba(201,168,76,.4); }
+  50%      { box-shadow:0 0 0 6px rgba(201,168,76,0); }
+}
+.pt-label { font-size:.42rem; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.25); }
+.pt-step.done .pt-label, .pt-step.active .pt-label { color:rgba(201,168,76,.6); }
+
+/* Driver info panel */
+.driver-panel {
+  flex:1; overflow-y:auto; padding:20px 22px 100px; scrollbar-width:none;
+}
+.driver-panel::-webkit-scrollbar { display:none; }
+
+/* Confirmed banner */
+.confirmed-banner {
+  background:rgba(201,168,76,.07); border:1px solid rgba(201,168,76,.2);
+  padding:12px 16px; margin-bottom:16px;
+  display:flex; align-items:center; gap:10px;
+}
+.confirmed-ico {
+  width:28px; height:28px; border-radius:50%;
+  background:rgba(201,168,76,.15); border:1px solid rgba(201,168,76,.4);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.confirmed-text { font-size:.62rem; letter-spacing:.1em; color:rgba(201,168,76,.8); }
+.confirmed-sub { font-size:.52rem; color:rgba(255,255,255,.25); margin-top:2px; }
+
+/* Driver card */
+.dcard {
+  background:var(--K2); border:1px solid var(--K3);
+  padding:18px 16px; margin-bottom:14px;
+}
+.dcard-top {
+  display:flex; align-items:center; gap:14px; margin-bottom:14px;
+}
+.dcard-avatar {
+  width:56px; height:56px; border-radius:50%;
+  background:var(--K3); border:1px solid var(--G);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--FD); font-size:1.1rem; color:var(--G);
+  flex-shrink:0; position:relative;
+}
+.dcard-online {
+  position:absolute; bottom:1px; right:1px;
+  width:10px; height:10px; border-radius:50%;
+  background:#4CAF50; border:2px solid var(--K2);
+}
+.dcard-name { font-family:var(--FD); font-size:1rem; color:var(--W); margin-bottom:3px; }
+.dcard-rating { display:flex; align-items:center; gap:4px; margin-bottom:2px; }
+.dcard-rating-val { font-size:.62rem; color:rgba(201,168,76,.8); }
+.dcard-trips { font-size:.5rem; letter-spacing:.12em; color:rgba(255,255,255,.2); text-transform:uppercase; }
+.dcard-vehicle-row {
+  background:var(--K3); padding:10px 12px;
+  display:flex; align-items:center; gap:10px;
+}
+.dcard-vehicle-ico {
+  width:32px; height:32px; border:1px solid var(--K4);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.dcard-vehicle-info { flex:1; }
+.dcard-vehicle-name { font-size:.65rem; color:var(--W1); }
+.dcard-vehicle-plate {
+  font-size:.52rem; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(201,168,76,.5);
+}
+
+/* Stats row */
+.stats-row {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:var(--K3); margin-bottom:14px;
+}
+.stat-c {
+  background:var(--K2); padding:14px 8px; text-align:center;
+}
+.stat-c-val { font-family:var(--FD); font-size:1.1rem; color:var(--G); margin-bottom:3px; }
+.stat-c-key { font-size:.44rem; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.2); }
+
+/* Action buttons */
+.action-row { display:flex; gap:8px; margin-bottom:14px; }
+.act-btn {
+  flex:1; background:var(--K2); border:1px solid var(--K3);
+  padding:13px 8px;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  cursor:pointer; transition:border-color .2s;
+}
+.act-btn:hover { border-color:var(--Gb); }
+.act-btn-label { font-size:.48rem; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.3); }
+
+/* Share ride */
+.share-row {
+  background:var(--K); border:1px solid var(--K3);
+  padding:14px 16px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.share-text { font-size:.6rem; color:rgba(255,255,255,.35); }
+.share-code {
+  font-family:var(--FD); font-size:.9rem; color:var(--G);
+  letter-spacing:.1em;
+}
+.share-copy {
+  font-size:.48rem; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(201,168,76,.5); cursor:pointer;
+  border:1px solid rgba(201,168,76,.2); padding:6px 10px;
+}
+
+/* Bottom nav */
+.bottom-nav {
+  position:absolute; bottom:0; left:0; right:0; height:80px;
+  background:rgba(10,10,10,.97); backdrop-filter:blur(20px);
+  border-top:1px solid var(--K3);
+  display:flex; align-items:center; justify-content:space-around;
+  z-index:500;
+}
+.nav-item { display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; padding:10px 16px; }
+.nav-label { font-size:.48rem; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.25); }
+.nav-item.active .nav-label { color:var(--G); }
+
+/* Ambient glow */
+#s-searching::before {
+  content:'';
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 45%, rgba(201,168,76,.05) 0%, transparent 65%);
+  pointer-events:none;
+}
+
+/* ── CANCEL CONFIRM MODAL ── */
+.modal-overlay {
+  position:absolute; inset:0; z-index:900;
+  background:rgba(0,0,0,.85); backdrop-filter:blur(4px);
+  display:none; align-items:flex-end; justify-content:center;
+}
+.modal-overlay.open { display:flex; }
+.modal-box {
+  background:var(--K2); border:1px solid var(--K3);
+  border-bottom:none; padding:28px 24px 36px; width:100%;
+  border-radius:0;
+  animation:slideUp .3s ease;
+}
+@keyframes slideUp { from{transform:translateY(40px); opacity:0;} to{transform:translateY(0); opacity:1;} }
+.modal-title { font-family:var(--FD); font-size:1.1rem; font-weight:300; color:var(--W); margin-bottom:8px; }
+.modal-sub { font-size:.6rem; color:rgba(255,255,255,.3); margin-bottom:24px; letter-spacing:.06em; line-height:1.7; }
+.modal-btns { display:flex; gap:10px; }
+.mbtn-keep { flex:1; background:var(--G); border:none; padding:14px; font-family:var(--FB); font-size:.58rem; letter-spacing:.3em; text-transform:uppercase; color:var(--K); cursor:pointer; }
+.mbtn-cancel { flex:1; background:none; border:1px solid var(--K3); padding:14px; font-family:var(--FB); font-size:.58rem; letter-spacing:.3em; text-transform:uppercase; color:rgba(255,255,255,.3); cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 1 · MAPA + SOLICITAR AHORA
+  ══════════════════════════════════════════ -->
+  <div class="screen active" id="s-map">
+
+    <!-- Live map -->
+    <div class="map-full">
+      <div class="map-grid-bg"></div>
+
+      <!-- Road lines SVG -->
+      <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 390 844" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Main avenues -->
+        <line x1="0" y1="280" x2="390" y2="320" stroke="rgba(201,168,76,.06)" stroke-width="14"/>
+        <line x1="0" y1="480" x2="390" y2="460" stroke="rgba(201,168,76,.05)" stroke-width="10"/>
+        <line x1="120" y1="0" x2="140" y2="844" stroke="rgba(201,168,76,.05)" stroke-width="10"/>
+        <line x1="260" y1="0" x2="280" y2="844" stroke="rgba(201,168,76,.04)" stroke-width="8"/>
+        <!-- Secondary streets -->
+        <line x1="0" y1="180" x2="390" y2="190" stroke="rgba(201,168,76,.03)" stroke-width="5"/>
+        <line x1="0" y1="380" x2="390" y2="390" stroke="rgba(201,168,76,.03)" stroke-width="5"/>
+        <line x1="60" y1="0" x2="70" y2="844" stroke="rgba(201,168,76,.03)" stroke-width="5"/>
+        <line x1="320" y1="0" x2="330" y2="844" stroke="rgba(201,168,76,.03)" stroke-width="5"/>
+        <!-- Block fills -->
+        <rect x="70" y="100" width="50" height="60" rx="2" fill="rgba(201,168,76,.02)"/>
+        <rect x="145" y="100" width="110" height="60" rx="2" fill="rgba(201,168,76,.02)"/>
+        <rect x="285" y="120" width="35" height="40" rx="2" fill="rgba(201,168,76,.015)"/>
+        <rect x="70" y="200" width="50" height="70" rx="2" fill="rgba(201,168,76,.02)"/>
+        <rect x="290" y="200" width="60" height="55" rx="2" fill="rgba(201,168,76,.02)"/>
+      </svg>
+
+      <!-- Floating driver pins -->
+      <div class="driver-pin nearby" style="top:28%;left:22%;">
+        <div class="dpin-icon nearby">
+          <div class="dpin-pulse"></div>
+          <svg width="16" height="14" viewBox="0 0 40 26" fill="none"><rect x="1" y="9" width="38" height="14" rx="3" stroke="#e8c96a" stroke-width="1.5"/><path d="M6 9L10 2H28L34 9" stroke="#e8c96a" stroke-width="1.5"/><circle cx="10" cy="22" r="3" fill="#e8c96a"/><circle cx="30" cy="22" r="3" fill="#e8c96a"/></svg>
+        </div>
+        <div class="dpin-label">J. Morales</div>
+        <div class="dpin-eta">3 min · GLS 580</div>
+      </div>
+
+      <div class="driver-pin" style="top:22%;left:60%;">
+        <div class="dpin-icon">
+          <svg width="16" height="14" viewBox="0 0 40 26" fill="none"><rect x="1" y="9" width="38" height="14" rx="3" stroke="#c9a84c" stroke-width="1.2"/><path d="M6 9L10 2H28L34 9" stroke="#c9a84c" stroke-width="1.2"/><circle cx="10" cy="22" r="3" fill="rgba(201,168,76,.5)"/><circle cx="30" cy="22" r="3" fill="rgba(201,168,76,.5)"/></svg>
+        </div>
+        <div class="dpin-label">C. Ramírez</div>
+        <div class="dpin-eta">6 min · BMW X7</div>
+      </div>
+
+      <div class="driver-pin" style="top:35%;left:72%;">
+        <div class="dpin-icon">
+          <svg width="16" height="14" viewBox="0 0 40 26" fill="none"><rect x="1" y="9" width="38" height="14" rx="3" stroke="rgba(201,168,76,.5)" stroke-width="1"/><path d="M6 9L10 2H28L34 9" stroke="rgba(201,168,76,.5)" stroke-width="1"/><circle cx="10" cy="22" r="3" fill="rgba(201,168,76,.3)"/><circle cx="30" cy="22" r="3" fill="rgba(201,168,76,.3)"/></svg>
+        </div>
+        <div class="dpin-label">M. Torres</div>
+        <div class="dpin-eta">9 min · S-Class</div>
+      </div>
+
+      <div class="driver-pin" style="top:18%;left:40%;">
+        <div class="dpin-icon">
+          <svg width="16" height="14" viewBox="0 0 40 26" fill="none"><rect x="1" y="9" width="38" height="14" rx="3" stroke="rgba(201,168,76,.4)" stroke-width="1"/><path d="M6 9L10 2H28L34 9" stroke="rgba(201,168,76,.4)" stroke-width="1"/><circle cx="10" cy="22" r="3" fill="rgba(201,168,76,.25)"/><circle cx="30" cy="22" r="3" fill="rgba(201,168,76,.25)"/></svg>
+        </div>
+        <div class="dpin-label">A. López</div>
+        <div class="dpin-eta">11 min · V-Class</div>
+      </div>
+
+      <!-- User location -->
+      <div class="user-loc">
+        <div class="user-ring1"></div>
+        <div class="user-ring2"></div>
+        <div class="user-dot"></div>
+      </div>
+
+      <!-- Overlay gradient -->
+      <div class="map-overlay-bottom"></div>
+    </div>
+
+    <!-- Top bar -->
+    <div class="map-topbar">
+      <div class="map-logo">AUT<span>U</span>M</div>
+      <div class="map-top-right">
+        <div class="map-ico-btn">
+          <svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.7)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <div class="map-ico-btn">
+          <svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.7)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nearby badge -->
+    <div class="nearby-badge">
+      <div class="nearby-dot"></div>
+      <span class="nearby-num">4</span>
+      <span class="nearby-text">conductores cerca</span>
+    </div>
+
+    <!-- Bottom sheet -->
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+
+      <div class="sheet-location">
+        <div class="loc-dot-g"></div>
+        <div class="loc-text"><span>Torre Mayor</span> — Tu ubicación actual</div>
+        <div class="loc-edit">Cambiar</div>
+      </div>
+
+      <div class="svc-row">
+        <div class="svc-chip on">
+          <div class="svc-chip-name">SUV</div>
+          <div class="svc-chip-price">$890</div>
+          <div class="svc-chip-eta">3 min</div>
+        </div>
+        <div class="svc-chip" onclick="selectChip(this)">
+          <div class="svc-chip-name">Sedán</div>
+          <div class="svc-chip-price">$650</div>
+          <div class="svc-chip-eta">6 min</div>
+        </div>
+        <div class="svc-chip" onclick="selectChip(this)">
+          <div class="svc-chip-name">Van</div>
+          <div class="svc-chip-price">$1,200</div>
+          <div class="svc-chip-eta">11 min</div>
+        </div>
+      </div>
+
+      <button class="cta-ahora" onclick="goTo('s-searching'); startRadar();">
+        Solicitar ahora
+      </button>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="nav-item active">
+        <svg width="20" height="20" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        <div class="nav-label">Ahora</div>
+      </div>
+      <div class="nav-item">
+        <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <div class="nav-label">Reserva</div>
+      </div>
+      <div class="nav-item">
+        <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <div class="nav-label">Perfil</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 2 · RADAR BUSCANDO
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="s-searching">
+
+    <!-- Top -->
+    <div style="padding:50px 24px 0; display:flex; align-items:center; justify-content:space-between; position:relative; z-index:2;">
+      <div onclick="showCancelModal()" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+        <div style="width:32px;height:32px;border:1px solid var(--K3);display:flex;align-items:center;justify-content:center;">
+          <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </div>
+        <span style="font-size:.52rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.25);">Cancelar</span>
+      </div>
+      <div style="font-family:var(--FD);font-size:.9rem;letter-spacing:.4em;color:var(--W);">AUT<span style="color:var(--G)">U</span>M</div>
+      <div style="width:80px;"></div>
+    </div>
+
+    <div class="search-content" style="margin-top:40px;">
+
+      <!-- RADAR -->
+      <div class="radar-wrap" id="radar-wrap">
+        <div class="radar-bg"></div>
+        <div class="radar-ring"></div>
+        <div class="radar-ring"></div>
+        <div class="radar-ring"></div>
+        <div class="radar-ring"></div>
+        <div class="radar-cross-h"></div>
+        <div class="radar-cross-v"></div>
+        <div class="radar-sweep"></div>
+        <div class="radar-center"></div>
+        <!-- Drivers appear dynamically via JS -->
+      </div>
+
+      <div class="search-status" id="search-status">
+        Localizando <em>conductores</em>
+      </div>
+      <div class="search-sub" id="search-sub">Escaneando área · Radio 5 km</div>
+
+      <!-- Found drivers list -->
+      <div class="found-list" id="found-list">
+        <div class="found-driver best" style="position:relative;">
+          <div class="fd-best-badge">Más cercano</div>
+          <div class="fd-avatar" style="border-color:var(--G);">JM</div>
+          <div class="fd-info">
+            <div class="fd-name">Juan Morales</div>
+            <div class="fd-vehicle">Mercedes GLS 580 · ABC 234 XY</div>
+            <div class="fd-rating">
+              <svg width="9" height="9" viewBox="0 0 10 10" fill="#c9a84c"><polygon points="5,1 6.2,3.8 9.5,4 7,6.3 7.6,9.5 5,8 2.4,9.5 3,6.3 0.5,4 3.8,3.8"/></svg>
+              4.98 · 1,247 viajes
+            </div>
+          </div>
+          <div class="fd-right">
+            <div class="fd-eta">3<span style="font-size:.7rem;"> min</span></div>
+            <div class="fd-eta-unit">ETA</div>
+            <div class="fd-dist">1.2 km</div>
+          </div>
+        </div>
+        <div class="found-driver">
+          <div class="fd-avatar">CR</div>
+          <div class="fd-info">
+            <div class="fd-name">Carlos Ramírez</div>
+            <div class="fd-vehicle">BMW X7 · XYZ 891 GH</div>
+            <div class="fd-rating"><svg width="9" height="9" viewBox="0 0 10 10" fill="#c9a84c"><polygon points="5,1 6.2,3.8 9.5,4 7,6.3 7.6,9.5 5,8 2.4,9.5 3,6.3 0.5,4 3.8,3.8"/></svg>4.91 · 876 viajes</div>
+          </div>
+          <div class="fd-right">
+            <div class="fd-eta" style="color:rgba(201,168,76,.6);">6<span style="font-size:.7rem;"> min</span></div>
+            <div class="fd-eta-unit">ETA</div>
+            <div class="fd-dist">2.8 km</div>
+          </div>
+        </div>
+        <div class="found-driver">
+          <div class="fd-avatar">MT</div>
+          <div class="fd-info">
+            <div class="fd-name">Miguel Torres</div>
+            <div class="fd-vehicle">Mercedes S 580 L · LMN 445 WQ</div>
+            <div class="fd-rating"><svg width="9" height="9" viewBox="0 0 10 10" fill="#c9a84c"><polygon points="5,1 6.2,3.8 9.5,4 7,6.3 7.6,9.5 5,8 2.4,9.5 3,6.3 0.5,4 3.8,3.8"/></svg>4.87 · 2,103 viajes</div>
+          </div>
+          <div class="fd-right">
+            <div class="fd-eta" style="color:rgba(201,168,76,.5);">9<span style="font-size:.7rem;"> min</span></div>
+            <div class="fd-eta-unit">ETA</div>
+            <div class="fd-dist">4.1 km</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="search-actions">
+        <button class="btn-cancel" onclick="showCancelModal()">Cancelar</button>
+        <button class="btn-confirm" id="btn-confirm" onclick="goTo('s-assigned')">
+          Confirmar — Juan M.
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 3 · DRIVER ASIGNADO
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="s-assigned">
+
+    <!-- Map area -->
+    <div class="assigned-map">
+      <div class="amap-grid"></div>
+      <svg class="amap-route-svg" viewBox="0 0 390 300" fill="none">
+        <!-- Grid -->
+        <line x1="78" y1="0" x2="78" y2="300" stroke="rgba(201,168,76,.04)" stroke-width="8"/>
+        <line x1="195" y1="0" x2="195" y2="300" stroke="rgba(201,168,76,.04)" stroke-width="8"/>
+        <line x1="312" y1="0" x2="312" y2="300" stroke="rgba(201,168,76,.04)" stroke-width="8"/>
+        <line x1="0" y1="100" x2="390" y2="105" stroke="rgba(201,168,76,.04)" stroke-width="8"/>
+        <line x1="0" y1="200" x2="390" y2="195" stroke="rgba(201,168,76,.04)" stroke-width="8"/>
+        <!-- Approach path -->
+        <path d="M110 190 Q130 155 170 145 Q195 140 195 140" stroke="rgba(201,168,76,.3)" stroke-width="2" stroke-dasharray="5 4"/>
+        <!-- Glow -->
+        <path d="M110 190 Q130 155 170 145 Q195 140 195 140" stroke="rgba(201,168,76,.12)" stroke-width="8"/>
+        <!-- Destination pin -->
+        <circle cx="195" cy="140" r="8" fill="rgba(201,168,76,.15)" stroke="#c9a84c" stroke-width="1.5"/>
+        <circle cx="195" cy="140" r="14" stroke="rgba(201,168,76,.25)" stroke-width="1"/>
+      </svg>
+
+      <!-- Moving car -->
+      <div class="amap-car">
+        <svg width="32" height="22" viewBox="0 0 40 26" fill="none">
+          <rect x="1" y="9" width="38" height="14" rx="3" fill="rgba(201,168,76,.2)" stroke="#c9a84c" stroke-width="1.2"/>
+          <path d="M6 9L10 2H28L34 9" fill="rgba(201,168,76,.1)" stroke="#c9a84c" stroke-width="1.2"/>
+          <circle cx="10" cy="22" r="3" fill="#c9a84c"/>
+          <circle cx="30" cy="22" r="3" fill="#c9a84c"/>
+        </svg>
+      </div>
+
+      <!-- User pin -->
+      <div class="amap-user">
+        <div class="amap-user-ring"></div>
+        <div class="amap-user-dot"></div>
+      </div>
+
+      <!-- Distance beam -->
+      <div class="amap-beam"></div>
+
+      <!-- ETA badge -->
+      <div class="amap-eta-badge">
+        <div>
+          <div class="aeta-label">Llegada en</div>
+          <div><span class="aeta-value" id="eta-countdown">3</span> <span class="aeta-unit">min</span></div>
+        </div>
+        <div class="aeta-divider"></div>
+        <div>
+          <div class="aeta-label">Distancia</div>
+          <div class="aeta-dist-val">1.2 km</div>
+        </div>
+      </div>
+
+      <!-- Progress steps -->
+      <div class="progress-track">
+        <div class="pt-step done">
+          <div class="pt-dot">
+            <svg width="8" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg>
+          </div>
+          <div class="pt-label">Solicitado</div>
+        </div>
+        <div class="pt-step done">
+          <div class="pt-dot">
+            <svg width="8" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg>
+          </div>
+          <div class="pt-label">Asignado</div>
+        </div>
+        <div class="pt-step active">
+          <div class="pt-dot"></div>
+          <div class="pt-label">En camino</div>
+        </div>
+        <div class="pt-step">
+          <div class="pt-dot"></div>
+          <div class="pt-label">Llegó</div>
+        </div>
+        <div class="pt-step">
+          <div class="pt-dot"></div>
+          <div class="pt-label">Viaje</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Driver panel -->
+    <div class="driver-panel">
+
+      <!-- Confirmed -->
+      <div class="confirmed-banner">
+        <div class="confirmed-ico">
+          <svg width="12" height="12" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" stroke="#c9a84c" stroke-width="1.5" fill="none"/></svg>
+        </div>
+        <div>
+          <div class="confirmed-text">Conductor asignado — ETA 3 min</div>
+          <div class="confirmed-sub">Se ha enviado la ubicación a su conductor</div>
+        </div>
+      </div>
+
+      <!-- Driver card -->
+      <div class="dcard">
+        <div class="dcard-top">
+          <div class="dcard-avatar">
+            JM
+            <div class="dcard-online"></div>
+          </div>
+          <div>
+            <div class="dcard-name">Juan Morales</div>
+            <div class="dcard-rating">
+              <svg width="11" height="11" viewBox="0 0 10 10" fill="#c9a84c"><polygon points="5,1 6.2,3.8 9.5,4 7,6.3 7.6,9.5 5,8 2.4,9.5 3,6.3 0.5,4 3.8,3.8"/></svg>
+              <span class="dcard-rating-val">4.98</span>
+            </div>
+            <div class="dcard-trips">1,247 viajes completados</div>
+          </div>
+        </div>
+        <div class="dcard-vehicle-row">
+          <div class="dcard-vehicle-ico">
+            <svg width="24" height="16" viewBox="0 0 40 26" fill="none"><rect x="1" y="9" width="38" height="14" rx="3" stroke="rgba(201,168,76,.6)" stroke-width="1.2"/><path d="M6 9L10 2H28L34 9" stroke="rgba(201,168,76,.6)" stroke-width="1.2"/><circle cx="10" cy="22" r="3" fill="rgba(201,168,76,.5)"/><circle cx="30" cy="22" r="3" fill="rgba(201,168,76,.5)"/></svg>
+          </div>
+          <div class="dcard-vehicle-info">
+            <div class="dcard-vehicle-name">Mercedes-Benz GLS 580 4MATIC</div>
+            <div class="dcard-vehicle-plate">ABC · 234 · XY · Negro obsidiana</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-c">
+          <div class="stat-c-val">3 min</div>
+          <div class="stat-c-key">ETA</div>
+        </div>
+        <div class="stat-c">
+          <div class="stat-c-val">1.2km</div>
+          <div class="stat-c-key">Distancia</div>
+        </div>
+        <div class="stat-c">
+          <div class="stat-c-val">$890</div>
+          <div class="stat-c-key">Tarifa</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-row">
+        <div class="act-btn">
+          <svg width="18" height="18" fill="none" stroke="rgba(201,168,76,.7)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <div class="act-btn-label">Llamar</div>
+        </div>
+        <div class="act-btn">
+          <svg width="18" height="18" fill="none" stroke="rgba(201,168,76,.7)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <div class="act-btn-label">Mensaje</div>
+        </div>
+        <div class="act-btn">
+          <svg width="18" height="18" fill="none" stroke="rgba(201,168,76,.7)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <div class="act-btn-label">Itinerario</div>
+        </div>
+        <div class="act-btn" onclick="showCancelModal()">
+          <svg width="18" height="18" fill="none" stroke="rgba(255,100,100,.5)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          <div class="act-btn-label" style="color:rgba(255,100,100,.4);">Cancelar</div>
+        </div>
+      </div>
+
+      <!-- Share -->
+      <div class="share-row">
+        <div>
+          <div class="share-text">Compartir viaje</div>
+          <div class="share-code">AUT-7X92K</div>
+        </div>
+        <div class="share-copy">Copiar</div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="nav-item">
+        <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        <div class="nav-label">Ahora</div>
+      </div>
+      <div class="nav-item active">
+        <svg width="20" height="20" fill="none" stroke="#c9a84c" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <div class="nav-label" style="color:var(--G)">En camino</div>
+      </div>
+      <div class="nav-item">
+        <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <div class="nav-label">Perfil</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ CANCEL MODAL ══ -->
+  <div class="modal-overlay" id="modal-cancel">
+    <div class="modal-box">
+      <div class="modal-title">¿Cancelar solicitud?</div>
+      <div class="modal-sub">Su conductor ya ha sido notificado y se dirige hacia usted.<br>La cancelación puede incurrir en un cargo de $120.</div>
+      <div class="modal-btns">
+        <button class="mbtn-keep" onclick="closeModal()">Mantener viaje</button>
+        <button class="mbtn-cancel" onclick="goTo('s-map'); closeModal();">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);font-size:.5rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(201,168,76,.18);pointer-events:none;">
+  AUTUM · Toca "Solicitar ahora" para simular
+</div>
+
+<script>
+// ── Navigation ──
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── Service chip selection ──
+function selectChip(el) {
+  document.querySelectorAll('.svc-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ── Radar animation ──
+function startRadar() {
+  const radar = document.getElementById('radar-wrap');
+  const status = document.getElementById('search-status');
+  const sub = document.getElementById('search-sub');
+  const foundList = document.getElementById('found-list');
+  const confirmBtn = document.getElementById('btn-confirm');
+
+  // Clear old drivers from radar
+  radar.querySelectorAll('.rdriver,.rline').forEach(e => e.remove());
+
+  const drivers = [
+    { x:67, y:35, label:'J. Morales', cls:'', delay:800 },
+    { x:175, y:55, label:'C. Ramírez', cls:'medium', delay:1600 },
+    { x:210, y:25, label:'M. Torres', cls:'far', delay:2400 },
+    { x:140, y:185, label:'A. López', cls:'far', delay:3000 },
+  ];
+
+  drivers.forEach((d, i) => {
+    setTimeout(() => {
+      // Ping line from center (130,130) to driver
+      const cx = 130, cy = 130;
+      const angle = Math.atan2(d.y - cy, d.x - cx) * 180 / Math.PI;
+      const dist = Math.hypot(d.x - cx, d.y - cy);
+      const line = document.createElement('div');
+      line.className = 'rline';
+      line.style.cssText = `left:${cx}px;top:${cy}px;width:${dist}px;transform:rotate(${angle}deg);`;
+      radar.appendChild(line);
+
+      // Driver dot
+      const pin = document.createElement('div');
+      pin.className = 'rdriver';
+      pin.style.cssText = `left:${d.x}px;top:${d.y}px;animation-delay:0s;`;
+      pin.innerHTML = `<div class="rdriver-dot ${d.cls}"></div><div class="rdriver-lbl">${d.label}</div>`;
+      radar.appendChild(pin);
+
+      // Update status text
+      if (i === 0) {
+        status.innerHTML = 'Encontrado: <em>1 conductor</em>';
+        sub.textContent = 'Analizando distancia y rating…';
+      }
+      if (i === 3) {
+        setTimeout(() => {
+          status.innerHTML = '<em>4 conductores</em> disponibles';
+          sub.textContent = 'Seleccionando el más cercano…';
+          setTimeout(() => {
+            status.innerHTML = 'Mejor opción: <em>Juan Morales</em>';
+            sub.textContent = 'GLS 580 · 1.2 km · 3 min de ETA';
+            foundList.classList.add('visible');
+            // Show found drivers with stagger
+            document.querySelectorAll('.found-driver').forEach((fd, fi) => {
+              setTimeout(() => fd.classList.add('show'), fi * 150);
+            });
+            confirmBtn.classList.add('visible');
+          }, 800);
+        }, 400);
+      }
+    }, d.delay);
+  });
+}
+
+// ── Cancel modal ──
+function showCancelModal() {
+  document.getElementById('modal-cancel').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal-cancel').classList.remove('open');
+}
+
+// ── ETA countdown (cosmetic) ──
+let etaTimer = null;
+function startEtaCountdown() {
+  let val = 3;
+  const el = document.getElementById('eta-countdown');
+  if (etaTimer) clearInterval(etaTimer);
+  etaTimer = setInterval(() => {
+    if (val > 1) { val--; el.textContent = val; }
+    else { clearInterval(etaTimer); }
+  }, 18000);
+}
+
+// Override goTo to trigger countdown on assigned screen
+const _goTo = goTo;
+window.goTo = function(id) {
+  _goTo(id);
+  if (id === 's-assigned') startEtaCountdown();
+};
+</script>
+</body>
+</html>

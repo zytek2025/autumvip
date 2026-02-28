@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-K: var(--K);
+  --color-K1: var(--K1);
+  --color-K2: var(--K2);
+  --color-K3: var(--K3);
+  --color-K4: var(--K4);
+  --color-W: var(--W);
+  --color-W1: var(--W1);
+  --color-W2: var(--W2);
+  --color-G: var(--G);
+  --color-G1: var(--G1);
+  --color-G2: var(--G2);
+  --color-G3: var(--G3);
+  --color-Go: var(--Go);
+  --color-Gb: var(--Gb);
+
+  --font-FD: var(--font-playfair);
+  --font-FB: var(--font-raleway);
+  --font-FC: var(--font-cormorant);
+}
+
+:root {
+  --K: #000000;
+  --K1: #0a0a0a;
+  --K2: #111111;
+  --K3: #1a1a1a;
+  --K4: #252525;
+  --W: #ffffff;
+  --W1: #f8f4ee;
+  --W2: #ede8df;
+  --G: #c9a84c;
+  --G1: #e8c96a;
+  --G2: #a8832a;
+  --G3: #f5e4b0;
+  --Go: rgba(201, 168, 76, 0.12);
+  --Gb: rgba(201, 168, 76, 0.28);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--K1);
+  color: var(--W1);
+  font-family: var(--font-raleway), sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+/* Custom Cursor Placeholder */
+.cur {
+  width: 7px;
+  height: 7px;
+  background: var(--G);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.08s;
+}
+
+.cur2 {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--G);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: all 0.2s ease;
+  opacity: 0.4;
+}
+
+@media (min-width: 1024px) {
+  body {
+    cursor: none;
+  }
+}
+
+/* ─ SCROLLBAR ─ */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--K);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--G2);
+  border-radius: 2px;
+}
+
+/* ─ ANIMATIONS ─ */
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleX {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes gleam {
+
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(201, 168, 76, 0.5);
+  }
+}
+
+@keyframes slowSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-riseIn {
+  animation: riseIn 1.2s ease forwards;
+}
+
+.animate-gleam {
+  animation: gleam 3s ease-in-out infinite;
+}
+
+.animate-slowSpin {
+  animation: slowSpin 60s linear infinite;
+}
