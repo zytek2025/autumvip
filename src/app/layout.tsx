@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Raleway, Cormorant_Garamond } from "next/font/google";
+import Script from "next/script";
 import { PhoneShell } from "@/components/ui/PhoneShell";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { BottomNav } from "@/components/ui/BottomNav";
@@ -44,6 +45,11 @@ export default function RootLayout({
         <main className="min-h-screen bg-black">
           {children}
         </main>
+        <Script
+          src="https://ionos.ai-voice-receptionist.com/chat-scripts-MqGN74WP/web-chat.js"
+          strategy="lazyOnload"
+          data-client-secret="adf9bab9-8f8d-406e-aec8-1fb5e235f44c"
+        />
       </body>
     </html>
   );
