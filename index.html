@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUTUM — Exclusive Mobility</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;1,300;1,400&family=Raleway:wght@100;200;300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --K: #000000;
+            --K1: #050505;
+            --K2: #0a0a0a;
+            --W: #ffffff;
+            --G: #c9a84c;
+            --G1: #e8c96a;
+            --G2: #a8832a;
+            --GL: rgba(201, 168, 76, 0.15);
+            --FD: 'Playfair Display', serif;
+            --FB: 'Raleway', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background: var(--K);
+            font-family: var(--FB);
+            overflow: hidden;
+            color: var(--W);
+        }
+
+        /* ── NOISE OVERLAY ── */
+        .noise {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            opacity: .03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* ── AMBIENT BACKGROUND ── */
+        .bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(201, 168, 76, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(201, 168, 76, 0.05) 0%, transparent 40%),
+                var(--K);
+        }
+
+        .orb {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(201, 168, 76, 0.03) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform-origin: center;
+            animation: slowFloat 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes slowFloat {
+            0% {
+                transform: translate(-30%, -20%) scale(1);
+            }
+
+            100% {
+                transform: translate(-70%, -80%) scale(1.2);
+            }
+        }
+
+        /* ── GEOMETRIC PATTERN ── */
+        .geo-container {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .geo-svg {
+            width: 120vh;
+            height: 120vh;
+            animation: rotateFull 120s linear infinite;
+        }
+
+        @keyframes rotateFull {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── CONTENT WRAPPER ── */
+        .content {
+            position: relative;
+            z-index: 20;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        /* ── LOGO & WORDMARK ── */
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            animation: fadeInUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .wordmark {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+
+        .letter {
+            font-family: var(--FD);
+            font-size: clamp(4rem, 15vw, 10rem);
+            font-weight: 300;
+            letter-spacing: 0.35em;
+            line-height: 1;
+            color: var(--W);
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.05);
+        }
+
+        .letter.gold {
+            color: var(--G);
+            font-style: italic;
+            position: relative;
+        }
+
+        .letter.gold::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 5%;
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--G1), transparent);
+            filter: blur(1px);
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scaleX(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scaleX(1.1);
+            }
+        }
+
+        .tagline {
+            font-size: clamp(0.6rem, 1.5vw, 0.75rem);
+            letter-spacing: 0.8em;
+            text-transform: uppercase;
+            color: rgba(201, 168, 76, 0.5);
+            margin-right: -0.8em;
+            font-weight: 300;
+        }
+
+        /* ── TEXT CONTENT ── */
+        .text-section {
+            margin-top: 60px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeInUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+            max-width: 500px;
+        }
+
+        .status {
+            font-family: var(--FD);
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 300;
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        .status em {
+            color: var(--G);
+            font-style: italic;
+        }
+
+        .apology {
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+            line-height: 1.8;
+        }
+
+        /* ── CONTACT ── */
+        .contact-section {
+            margin-top: 80px;
+            opacity: 0;
+            animation: fadeInUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) 1s forwards;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .contact-label {
+            font-size: 0.55rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: rgba(201, 168, 76, 0.4);
+            margin-bottom: 24px;
+        }
+
+        .phone-display {
+            font-family: var(--FD);
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 0.15em;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .phone-display::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 1px;
+            background: var(--G);
+            opacity: 0.3;
+        }
+
+        /* ── BUTTONS ── */
+        .actions {
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-link {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            color: var(--W);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .action-link:hover {
+            transform: translateY(-8px);
+            border-color: var(--G);
+            background: rgba(201, 168, 76, 0.08);
+            box-shadow: 0 15px 35px rgba(201, 168, 76, 0.1);
+        }
+
+        .action-link svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.5;
+            transition: transform 0.4s;
+        }
+
+        .action-link:hover svg {
+            stroke: var(--G1);
+            transform: scale(1.1);
+        }
+
+        .action-link.wa:hover {
+            background: rgba(37, 211, 102, 0.05);
+            border-color: #25D366;
+        }
+
+        .action-link.wa:hover svg {
+            stroke: #25D366;
+        }
+
+        /* ── FOOTER MARK ── */
+        .footer-mark {
+            position: fixed;
+            bottom: 30px;
+            font-size: 0.5rem;
+            letter-spacing: 0.6em;
+            text-transform: uppercase;
+            color: rgba(201, 168, 76, 0.15);
+            pointer-events: none;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Fixes */
+        @media (max-width: 480px) {
+            .actions {
+                gap: 15px;
+            }
+
+            .tagline {
+                letter-spacing: 0.4em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="noise"></div>
+    <div class="bg">
+        <div class="orb"></div>
+    </div>
+
+    <!-- Geometric Aura -->
+    <div class="geo-container">
+        <svg class="geo-svg" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="500,50 900,280 900,720 500,950 100,720 100,280" stroke="var(--G)" stroke-width="0.5" />
+            <polygon points="500,100 850,300 850,700 500,900 150,700 150,300" stroke="var(--G)" stroke-width="0.3" />
+            <path d="M500 50 L500 950 M100 280 L900 720 M100 720 L900 280" stroke="var(--G)" stroke-width="0.2"
+                opacity="0.5" />
+        </svg>
+    </div>
+
+    <div class="content">
+        <!-- Logo Section -->
+        <header class="logo-section">
+            <div class="wordmark">
+                <span class="letter">A</span>
+                <span class="letter gold">U</span>
+                <span class="letter">T</span>
+                <span class="letter">U</span>
+                <span class="letter">M</span>
+            </div>
+            <p class="tagline">Executive Mobility</p>
+        </header>
+
+        <!-- Message Section -->
+        <main class="text-section">
+            <h2 class="status">Our portal is currently<br><em>under construction</em></h2>
+            <p class="apology">We are crafting a premium experience for you.<br>Thank you for your patience.</p>
+        </main>
+
+        <!-- Contact Section -->
+        <footer class="contact-section">
+            <p class="contact-label">Available for direct inquiries</p>
+            <div class="phone-display">+1 (854) 222 · 1177</div>
+
+            <div class="actions">
+                <a href="tel:+18542221177" class="action-link" title="Call Us">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.09 9.81a19.79 19.79 0 01-3.07-8.65A2 2 0 012 0h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z" />
+                    </svg>
+                </a>
+                <a href="sms:+18542221177" class="action-link" title="Send SMS">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                    </svg>
+                </a>
+                <a href="https://wa.me/18542221177" class="action-link wa" title="WhatsApp">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+                    </svg>
+                </a>
+            </div>
+        </footer>
+
+        <div class="footer-mark">AUTUMVIP.COM</div>
+    </div>
+</body>
+
+</html>
